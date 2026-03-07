@@ -1,0 +1,633 @@
+%% Ejemplo de la plantilla de latex para las diapositivas del Máster en IA 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Valores para el ratio de aspecto: 43, 169 
+\documentclass[10pt, envcountsect, presentation, aspectratio=43]{beamer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Incluir fichero de estilo del máster
+\input plantillaMasterIA.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\addbibresource{references.bib}
+
+
+
+
+%\input{embed_video.tex}
+%\usepackage{movie15}
+\usepackage{multimedia}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Información que aparecerá en la portada
+\title[Aprendizaje Avanzado]{Aprendizaje Avanzado}
+\subtitle{Tema 1. Aprendizaje por Refuerzo} % short title for footer
+
+\author[L. D. Hernández] % Para el pie de página, poner los autores abreviados separados por comas.
+{%
+	\sc{Luis Daniel Hernández Molinero }\\ % Autor 1
+	\textit{Ciencia de la Computación e Inteligencia Artificial}\\  % Area de conocimiento
+	\textit{Dept. Ingeniería de la Información y las Comunicaciones}\\  % Departamento
+	\\   % No dejes espacio entre esta línea y la llave siguiente 
+}
+
+\institute[DIIC]% % Poner las iniciales de los diferentes departamentos de los autores separadas por comas.
+{
+	\textit{Universidad de Murcia}
+}
+
+\date{2024/2025} % Curso académico
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Contenido de las diapositivas
+\setbeamerfont{normal text}{size=\normalsize} % Modifica el tamaño del texto de las diapositivas.
+\AtBeginDocument{\usebeamerfont{normal text}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Índice de Contenidos}
+	\tableofcontents 
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{TODO}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{TODO}
+
+\begin{itemize}
+\item Cosas por hacer con \verb!\todo{}!
+\item \verb!\listoftodos!  muestra el listado.
+\item Lista de TODO en estas transparencias:
+
+\listoftodos
+\end{itemize}
+
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{¿De qué va esto?}
+
+%\listofnotes
+
+
+\begin{abstract}
+Es un ejemplo de lo que se puede hacer con beamer con una plantilla modificada de la presentada por Fernando Jiménez.
+\end{abstract}
+
+
+\todo{Hacer un dibujo}
+
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Vídeos}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Vídeos}
+
+
+\begin{columns}
+
+\begin{column}{.3\textwidth}
+
+\centering embed\_video.tex
+
+\embedvideo*{\includegraphics[width=\textwidth]{videos/NoPisaSuelo.jpg}}{videos/NoPisaSuelo.mp4}
+
+\end{column}
+
+
+\begin{column}{.3\textwidth}
+\centering multimedia
+
+\movie[externalviewer]{\includegraphics[width=\textwidth, keepaspectratio]{videos/NoPisaSuelo.jpg}}{videos/NoPisaSuelo.mp4}
+% \movie[showcontrols=true]{\includegraphics[width=.15\textwidth, keepaspectratio]{videos/NoPisaSuelo.jpg}}{videos/NoPisaSuelo.mp4} %%% NO FUNCIONA
+
+
+\end{column}
+
+\begin{column}{.3\textwidth}
+
+\centering href
+
+\href{https://youtube.com/shorts/Yv1bG0KxRDU?si=diW-u1RDUOsyWUsw}{\includegraphics[width=\textwidth, keepaspectratio]{videos/NoPisaSuelo.jpg}}
+\end{column}
+
+\end{columns}
+
+
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Listas}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Listas no enumeradas}
+
+\begin{frame}{Ejemplo de listas no enumeradas}
+
+Probando
+
+
+
+\begin{itemize}
+\item Primer elemento Primer elemento Primer elemento Primer elemento {Primer abcdefgh} Primer elemento Primer elemento Primer elemento Primer elemento Primer elemento Primer elemento Primer elemento Primer elemento
+
+Primer elemento Primer elemento Primer elemento Primer elemento 
+	\begin{itemize}
+	\item Primero del primer elemento
+	\item Segundo del primer elemento 
+	\end{itemize}
+\item Segundo elemento
+	\begin{itemize}
+	\item Primero del segundo elemento
+			\begin{itemize}
+			\item[--] Primero del primero del segundo elemento (puedes particular)
+			\item Segundo del primero del segundo elemento 
+			\end{itemize}
+
+	\item Segundo del segundo elemento 
+	\end{itemize}
+\item Tercer elemento
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Listas enumeradas}
+
+\begin{frame}{Ejemplo de listas enumeradas}
+\begin{enumerate}
+\item Primer elemento
+	\begin{enumerate}
+	\item Primero del primer elemento
+	\item Segundo del primer elemento 
+	\end{enumerate}
+\item Segundo elemento
+	\begin{enumerate}
+	\item Primero del segundo elemento
+			\begin{enumerate}
+			\item[--] Primero del primero del segundo elemento (NO debes particular)
+			\item Segundo del primero del segundo elemento 
+			\end{enumerate}
+
+	\item Segundo del segundo elemento 
+	\end{enumerate}
+\item Tercer elemento
+\end{enumerate}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Listas descriptivas}
+
+
+\begin{frame}{Ejemplo de listas descriptivas}
+
+
+\begin{description}[12]
+\item[Primer] elemento
+	\begin{description}[12]
+	\item[Primero] del primer elemento
+	\item[Segundo] del primer elemento 
+	\end{description}
+\item[Segundo] elemento
+	\begin{description}[12]
+	\item[Primero] del segundo elemento
+			\begin{description}[6]
+			\item[Primero] del primero del segundo elemento (NO puedes particular)
+			\item[Segundo] del primero del segundo elemento 
+			\end{description}
+
+	\item[Segundo] del segundo elemento 
+	\end{description}
+\item[Tercer] elemento
+\end{description}
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Matemáticas}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Fórmulas matemáticas}
+
+\begin{frame}{Matemáticas}
+\begin{itemize}
+\item  Se cumple que $e^x=e^{\ln(e^x)}$.
+
+\item  Se cumple que: $$e^x=e^{\ln(e^x)}$$
+
+\item  Se cumple que: 
+\begin{equation}
+e^x=e^{\ln(e^x)}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Bloques matemáticos}
+
+
+\begin{frame}{Ejemplos de bloques matemáticos}{ ... en español}
+
+\begin{fact}[Evidencias]
+	bla, bla
+\end{fact}
+	
+	
+\begin{definition}[Probabilidad]
+	bla, bla
+	
+\begin{itemize}
+\item adfsdf
+\item afdsf
+\end{itemize}
+
+
+\end{definition}
+
+
+
+\begin{lemma}[Lema de Neyman–Pearson]
+	bla, bla
+\end{lemma}
+		
+\begin{theorem}[T. del punto fijo]
+	bla, bla
+\end{theorem}
+
+
+
+\begin{corollary}[Es inmediato]
+	bla, bla
+\end{corollary}
+	
+
+\begin{proof}
+	bla, bla
+\end{proof}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{Título del tema}{Título de la sección}
+% \vskip -1cm % Para subir (-) o bajar el texto
+\noindent\textbf{Título de la subsección (o del concepto en su caso)}
+	\begin{itemize}
+	\item Texto ...
+	\item Texto ... \citep{Russell2020} ...
+		\begin{itemize}
+		\normalsize % Quítalo si quieres que se reduzca automáticamente el tamaño del texto	
+		\item[--] Texto ...
+		\item[--] La \href{https://es.wikipedia.org/wiki/Inteligencia_artificial}{Inteligencia Artificial} ...
+			\begin{itemize}
+			\normalsize % Quítalo si quieres que se reduzca automáticamente el tamaño del texto
+			\item[$\bullet$] Texto ...
+			\end{itemize}	
+			\end{itemize} 
+	\item Texto ...		
+	\item Texto ...
+	\end{itemize}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Bloques}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{Ejemplos de bloques de texto ... en español}
+
+
+
+%\alert{Cuidado}
+
+\begin{alert}{alerta}
+	bla, bla
+\end{alert}
+
+\begin{alertblock}{alertblock}
+	bla, bla
+\end{alertblock}
+
+
+\begin{example}[example]
+	bla, bla
+\end{example}
+
+
+\begin{examples}[examples, plural.]
+	bla, bla
+\end{examples}
+
+\begin{exampleblock}{\faHandPointRight\/ otra coas}
+\faHandPointRight[regular]\/ 	bla, bla
+\end{exampleblock}
+
+
+
+\begin{block}{Un bloque cualquiera}
+    bla, bla
+\end{block}
+
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\setbeamertemplate{blocks}[rounded][shadow=false]
+
+\begin{frame}[fragile]{Los mismo bloques sin sombras}
+
+Escribe el siguiente código:
+
+\hfil{\tiny
+\begin{verbatim}
+{ \setbeamertemplate{blocks}[shadow=false]
+\begin{nombrebloque}
+contenido del bloque
+\end{nombrebloqe}
+}
+\end{verbatim}
+}
+
+Como ejemplos:
+
+\hfil\begin{minipage}{.5\textwidth}
+\begin{alertblock}{\faEye \/ Ojo, ten cuidado}
+	bla, bla
+\end{alertblock}
+	
+\begin{example}[Un ejemplo]
+	bla, bla
+\end{example}
+
+\begin{block}{\faInfoCircle\/ Un bloque cualquiera}
+    bla, bla
+\end{block}
+\end{minipage}
+
+	
+\end{frame}
+}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Título del tema}{Título de la sección}
+%\vskip -1cm % Para subir (-) o bajar el texto 
+	\textbf{Título de la subsección}
+	\begin{itemize}
+	\item \textbf{Título de la subsubsección}
+		\begin{itemize}
+		\normalsize % Quítalo si quieres que se reduzca automáticamente el tamaño del texto	
+		\item[--] Texto ...
+		\item[--] Texto ...
+			\begin{itemize}
+			\normalsize % Quítalo si quieres que se reduzca automáticamente el tamaño del texto	
+			\item[$\bullet$] Texto ...
+			\end{itemize}
+		\end{itemize} 
+	\end{itemize}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algoritmos y Código Python}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Algoritmo}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Título del tema}{Título de la sección}
+\vskip 0.3cm % Para subir (-) o bajar el texto
+\textbf{Título de la subsección (o del concepto en su caso)}
+	\begin{algoritmo}[H]	
+	\algsetup{linenosize=\tiny}		
+	\caption{\scriptsize{Seleccion Clonal}}
+	\label{alg:SeleccionClonal}
+	\scriptsize
+		\begin{algorithmic}[1]
+			\REQUIRE $T\geq1$ \COMMENT{Número de iteraciones}
+			\REQUIRE $N\geq1$ \COMMENT{Número de células en la población}
+			\REQUIRE $M\geq1$ \COMMENT{Número de células seleccionadas para clonarse}			
+			\REQUIRE $\beta>0$ \COMMENT{Factor multiplicativo para el número de clones}
+			\REQUIRE $R\geq1$ \COMMENT{Número de células aleatorias}			
+			\REQUIRE $\rho>0$ \COMMENT{Tasa de decaimiento de la mutación} 
+			\ENSURE $S$ \COMMENT{Mejor solución encontrada}
+			\STATE $P_0\leftarrow$ RandomPopulation($N$) \COMMENT{Crea una población de células aleatoria}		
+			\STATE $t\leftarrow0$
+			\WHILE {$t<T$}
+				\STATE $B_t\leftarrow$ Best($P_t$, $M$) \COMMENT{Selecciona las mejores $M$ células de $P_t$}
+				\STATE $C_t\leftarrow$ Clones($B_t$, $\beta$, $N$) \COMMENT{Genera clones}
+				\STATE $O_t\leftarrow$ Maturate($C_t$, $\rho$) \COMMENT{Maduración de los clones vía hipermutación}
+				\STATE $Q_t\leftarrow$ RandomPopulation($R$) \COMMENT{Crea una población de células aleatoria}				
+				\STATE $P_{t+1}\leftarrow$ Best($P_t+O_t+Q_t$, $N$) \COMMENT{Selecciona las $N$ mejores células de $P_t+O_t+Q_t$}
+				\STATE $t\leftarrow t+1$
+			\ENDWHILE
+			\STATE $S\leftarrow$ Best($P_t$)  \COMMENT{Devuelve la mejor solución}
+			\RETURN $S$
+		\end{algorithmic}
+	\end{algoritmo}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Python}
+
+
+\begin{frame}[fragile]{Ejemplo de código Python}
+
+\begin{block}{Ejecución de código en tiempo real}
+\begin{pyconsole}
+var = 1 + 8
+var
+\end{pyconsole}
+\end{block}
+
+
+\begin{block}{Mostrar código (sin que se ejecute)}
+\begin{pyverbatim}
+var = 1 + 8
+var
+\end{pyverbatim}
+\end{block}
+
+
+
+
+% NO FUNCIONA CON ESTO
+%\begin{pycode}
+%import numpy as np
+%import matplotlib.pyplot as plt
+%
+%# Parámetros
+%epsilon_0 = 1.0
+%lambda_ = 0.01
+%t_values = np.linspace(0, 100, 200)
+%
+%# Funciones de decaimiento
+%def linear_decay(t, epsilon_0, lambda_):
+%    return np.maximum(epsilon_0 - t * lambda_, 0)
+%
+%def exponential_decay(t, epsilon_0, lambda_):
+%    return epsilon_0 * np.exp(-lambda_ * t)
+%
+%def inverse_decay(t, epsilon_0, lambda_):
+%    return epsilon_0 / (1 + lambda_ * t)
+%
+%# Cálculo de los valores
+%epsilon_linear = linear_decay(t_values, epsilon_0, lambda_)
+%epsilon_exponential = exponential_decay(t_values, epsilon_0, lambda_)
+%epsilon_inverse = inverse_decay(t_values, epsilon_0, lambda_)
+%
+%# Gráfico
+%plt.figure(figsize=(8, 5))
+%plt.plot(t_values, epsilon_linear, label="Decaimiento Lineal")
+%plt.plot(t_values, epsilon_exponential, label="Decaimiento Exponencial")
+%plt.plot(t_values, epsilon_inverse, label="Decaimiento Inversamente Proporcional")
+%plt.xlabel("Paso $t$")
+%plt.ylabel("$\epsilon_t$")
+%plt.title("Comparación de Funciones de Decaimiento de $\epsilon$")
+%plt.legend()
+%plt.grid(True)
+%
+%# Guardar el gráfico
+%plt.savefig("epsilon_decay_comparison.png")
+%\end{pycode}
+%
+% Insertar el gráfico generado
+%
+%\includegraphics[width=0.8\textwidth]{epsilon_decay_comparison.png}
+
+
+
+
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Redefinimos la apariencia
+%\setbeamertemplate{headline}{}
+%\setbeamertemplate{frametitle}{\vskip 0.5cm	\small{\textbf{\insertframetitle}}}
+%\setbeamertemplate{footline}{}
+
+
+
+
+
+% Mostramos la bibliografía
+% \begin{frame}[allowframebreaks] %% Si ocupa más de una página
+\begin{frame}[fragile]{Referencias} %% Si hay sólo una página
+	% \vskip -5cm %% Para ajustar la distancia al comienzo	
+	%\bibliography{references}	
+	\printbibliography[heading=none]
+\end{frame}    
+
+
+		
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
