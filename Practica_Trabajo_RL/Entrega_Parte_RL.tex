@@ -1,0 +1,1697 @@
+% !TEX TS-program = LuaLaTeX
+
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Incluir fichero de estilo del máster
+\input ../style/practicasMasterIA.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{hyperref}
+
+\usepackage{emoji}
+\usepackage{soul}
+
+
+\sethlcolor{yellow} % Color de resaltado
+\setstcolor{red}    % Color del tachado
+
+\newcommand\tachar[1]{\emoji{scissors}\st{#1}}
+\newcommand\nuevo[1]{\hl{#1}}
+
+
+\usepackage[nowatermark]{fixmetodonotes}
+\defnote{NOTA}{margin}{\emoji{double-exclamation-mark} \uwave}
+\renewcommand\listnotesname{Lista de Notas Añadidas}
+
+
+\begin{document}
+
+
+% Portada
+\begin{titlepage}
+  \centering
+  \includegraphics[width=5cm]{../style/images/Logo-MIA.png}\par\vspace{1cm}
+  {\Huge\bfseries\textcolor{UMUblue}{Aprendizaje por Refuerzo}\par}
+  \vspace{1.5cm}
+  {\Large Sobre la entrega y defensa de la primera parte \par }
+  \vspace{0.5cm}
+  {\large Máster en Inteligencia Artificial\par Universidad de Murcia\par}
+  \vfill
+
+  
+  
+  \vfill
+  
+  \epigraph{``El hombre que ha cometido un error y no lo corrige, comete otro error mayor.''}{\textit{Confucio}\footnote{\scriptsize Reconocer y corregir los errores propios es una parte fundamental del crecimiento personal y el desarrollo moral.
+La idea central de esta frase tiene paralelismos interesantes con  los algoritmos de aprendizaje por refuerzo.
+}
+}
+
+%  \begin{itemize}
+%  \item Tareas a realizar: hasta 8 puntos.
+%  	\begin{itemize}
+%	\item Implementación correcta de cada grupo de algoritmos: hasta 6 puntos.
+%	\item Estudio comparativo entre grupos: hasta 2 puntos.
+%	\end{itemize}
+%  \item Trabajo de investigación: hasta 2 puntos.
+%  \end{itemize}
+  \vfill
+  {\large \faIcon{calendar}\quad \today}
+\end{titlepage}
+
+~
+
+\listofnotes
+
+\newpage
+
+~
+
+\vfill
+\tableofcontents
+ 
+\vfill
+
+~
+ 
+\newpage
+
+
+
+  
+
+\section{Introducción }
+
+
+El aprendizaje por refuerzo es una de las ramas más fascinantes de la inteligencia artificial porque está demostrando que cada vez tiene más aplicaciones, desde juegos y finanzas en sus inicios hasta la construcción LLMs (Large Language Models) como DeepSeek. Su enfoque se basa en la interacción de un agente con un entorno para aprender a tomar decisiones óptimas a través de la experiencia y la retroalimentación.  
+
+
+El objetivo de su trabajo final es que desarrollen las actividades prácticas que se proponen para  que profundicen  en algunos conceptos y fundamentos clave del aprendizaje por refuerzo y que constituyen el sistema de evaluación \textit{SE1: Informe técnico de prácticas de laboratorio}. Dicho informe deberá ser defendido de acuerdo al sistema de evaluación \textit{SE3: Presentación pública de trabajos}.
+
+
+Más allá del desarrollo de los ejercicios que se proponen, en un máster es importante la búsqueda y selección de bibliografía relevante y el análisis de los resultados obtenidos. 
+Con todo  ello, tal y como se indica en la guía docente, se trata de que entreguen un trabajo donde muestren creatividad, precisión, rigor técnico y profundidad de análisis, discusión de resultados, justificación de las decisiones adoptadas, dando conclusiones razonadas y avaladas por fuentes acordes al informe realizado. 
+
+Por supuesto no es menos importante ser capaz de  presentan el proyecto realizado y compartir las investigaciones obtenidas o trabajos académicos consultados. Durante las sesiones expositivas, los estudiantes deben ser capaces tanto de mostrar sus hallazgos como de responder a las preguntas y discusión con sus compañeros y el instructor. 
+
+
+A continuación se indican las actividades prácticas que debe desarrollar en grupos.
+
+
+ así como varias alternativas de trabajos que pueden exponer y presentar como complemento a la actividades anteriores.
+
+
+
+\section{Criterios de Evaluación}
+
+De acuerdo al sistema de evaluación de la asignatura, según la guía docente, se tienen los sistemas de evaluación:
+\begin{itemize}
+\item \textit{SE1:} Informe técnico de prácticas de laboratorio. 
+\item\textit{SE3:} Presentación pública de trabajos.
+\end{itemize}
+
+
+
+
+
+\subsection{Informe técnico de prácticas}
+
+El Informe técnico de prácticas de laboratorio es un documento escrito que describe el proceso, progreso y resultados de los trabajos prácticos de laboratorio, apoyado por una documentación experimental (software+notebooks).  La evaluación de la documentación abarca desde el proceso de la motivación, diseño y experimentación hasta las conclusiones e incluye aspectos de comunicación y dominio disciplinar. Los criterios a destacar son:
+
+\begin{itemize}
+\item 
+\textbf{Claridad y coherencia en la redacción.} Evalúa la capacidad de comunicar ideas de manera clara, ordenada y sin ambigüedades. Incluye gramática, ortografía, puntuación y estilo adecuado al contexto académico. Se observa la estructura lógica del documento (introducción, contexto, desarrollo, experimentación, conclusión, trabajos futuros y referencias).
+
+\item 
+\textbf{Precisión técnica y dominio del contenido.} La precisión y relevancia de la información teórica presentada (estado del arte). La corrección de los procedimientos, cálculos, análisis y uso de terminología técnica. Debe evidenciarse el conocimiento específico de la asignatura.
+
+\item 
+\textbf{Desarrollo del proceso experimental.} Con rigor metodológico describe de manera justificada, detallada y comprensible las etapas del trabajo de laboratorio. La capacidad de documentar rigurosamente lo realizado para su reproducibilidad. Calidad y pertinencia de las gráficas, análisis estadísticos, etc .. que sean claros, justos y necesarios para su discusión.
+
+\item 
+\textbf{Capacidad de análisis, discusión y calidad de las conclusiones.} Examina la habilidad para interpretar resultados, identificar errores o desviaciones, contrastar con lo esperado. Incluye reflexión crítica, argumentación sólida y formulación de conclusiones relevantes de calidad que respondan a los objetivos iniciales de manera concisa. Considera sugerencias para trabajos futuros.
+
+\item 
+\textbf{Uso de referencias cruzadas, fuentes y referencias bibliográficas.} Realiza las referencias adecuadas (cruzadas o bibliográficas) en cada parte del documento. Evalúa la calidad, actualidad y relevancia de las fuentes utilizadas. Considera el cumplimiento de la norma de citación que se pida para la entrega (p.e. APA, IEEE, etc.).
+\end{itemize}
+
+
+\begin{importantbox}
+\begin{itemize} \small
+
+\item La presentación y defensa del informe no obliga a presentar todas las partes.
+\item La puntuación máxima que se puede obtener en cada parte es de 3.5 puntos.
+\end{itemize}
+\end{importantbox}
+
+
+\subsection{Presentación pública de trabajos} \label{subsec:presentacion}
+
+Se trata de exponer y evaluar los resultados del trabajo realizado y suele venir acompañado de una discusión final y debate con el público, moderado por el docente. Permite evaluar competencias de expresión oral y comunicación, adicionales a las específicas de la asignatura.
+
+La evaluación de la exposición oral estará basada en el informe técnico correspondiente y busca evaluar tanto las competencias comunicativas orales como el dominio del contenido técnico que se presentará. Criterios a destacar son:
+
+\begin{enumerate}
+\item \textbf{Claridad y estructura de la presentación oral.} La exposición tiene una introducción clara, un desarrollo ordenado y una conclusión adecuada. El mensaje debe ser comprensible, independientemente del estilo de habla. Se prioriza al claridad conceptual y metodológica. Los tiempos entre los miembros del grupo están bien distribuidos.
+
+\item \textbf{Dominio del contenido y rigor técnico.} Cada miembro expone contenidos de dificultad similar y prioriza la información relevante. Muestra comprensión de los conceptos presentados. Se explica, sin ambigüedades, el proceso experimental, resultados y conclusiones sin depender excesivamente de notas. Precisión en las explicaciones y el uso adecuado de terminología técnica.
+
+\item \textbf{Cobertura integral del informe técnico.} La exposición oral \key{refleja} de manera sintética pero completa \key{el contenido del informe técnico final}. Se valorará positivamente la capacidad de comunicar todas las secciones clave del trabajo escrito a presentar. Debe evitarse la omisión de apartados relevantes respecto del informe final. 
+
+\textit{Nota: Aunque para la exposición no es necesario mostrar todo lo que que se vaya a presentar en el informe, cuanto más se asemeje la exposición al documento final, mayor valoración tendrá este criterio.}
+
+\item \textbf{Uso de apoyos visuales o materiales complementarios.} Calidad y pertinencia de las diapositivas, gráficos, tablas, animaciones, vídeos o materiales visuales. Adecuada integración de los elementos visuales en la exposición. Uso responsable de tecnología (p.e. no leer directamente de las diapositivas, evitar saturación de texto, etc).
+
+\item \textbf{Gestión de preguntas, discusión y argumentación.} \key{Todos} los miembros del grupo son capaces de responder con claridad, seguridad y precisión a preguntas del público o del docente. Demuestran pensamiento crítico y dominio del tema. Actitud receptiva y argumentación basada en evidencia del trabajo realizado.
+\end{enumerate}
+
+
+
+\begin{importantbox}
+\begin{itemize} \small
+
+\item Se deberá presentar \hl{la misma versión} del repositorio con la que hayan realizado la parte documental. 
+
+
+
+\item Solo cuando se haga la entrega y se realice la correspondiente defensa de la entrega, el alumno obtendrá una calificación de dicha parte. 
+
+\item Presentar el trabajo pero no defenderlo, o defender un trabajo que no se presenta, no conllevará ninguna calificación.
+
+Por favor, evite esta situación para  no perjudicar la exposición de sus compañeros. Si no se presenta, sus compañeros podrán tener más tiempo para defender mejor sus trabajos.
+
+\end{itemize}
+\end{importantbox}
+
+\newpage
+
+\section{El Informe Técnico y su Defensa}
+
+El informe técnico es un documento escrito que describe el proceso, progreso y resultados de los trabajos prácticos de laboratorio. También deberá incluir discusiones y conclusiones del trabajo, así como estado del arte y referencias bibliográficas. Es fundamental que consulten fuentes confiables, como artículos científicos, libros y recursos académicos, y que los integren adecuadamente en sus análisis. Recuerde lo siguiente:
+{\it
+Todos los recursos y materiales no originales que se utilicen en los ejercicios evaluables, incluyendo herramientas de Inteligencia Artificial, ayuda de compañeros, recursos de internet, libros, artículos, etc. deberán referenciarse claramente en el código fuente y la documentación asociada a los ejercicios prácticos entregados. De otro modo será de aplicación el Artículo 22.1 del REVA.}
+
+
+El trabajo constará de \hl{~ 3 ~} partes:
+\begin{itemize}
+\item Parte 1: Problema del Bandido de k-brazos.
+\item Parte 2: Técnicas tabulares de Aprendizaje por Refuerzo.
+\item Parte 3: Técnicas aproximadas de Aprendizaje por Refuerzo.
+\end{itemize}
+
+
+El informe tendrá dos fuentes documentales:
+\begin{itemize}
+\item Un documento escrito, que será un fichero . pdf que expondrá todo el proyecto realizado junto con el análisis de la componente experimental.
+
+\item Toda la  documentación experimental (notebooks), que se ejecutará en Colab (\textbf{sin errores}) a partir de un repositorio de GitHub y que respalde al documento escrito.
+
+\end{itemize}
+
+Además, se deberá de hacer una defensa pública del trabajo realizado.
+
+
+\begin{importantbox}
+\begin{itemize}
+
+\item Para tener una evidencia completa, a afectos de evaluación y custodia, en el Aula Virtual tendrán que presentar todas las partes con todas sus componentes en \textbf{un único fichero .zip}. Tendrá como fecha tope de entrega el \hl{15 de marzo}, y se presentará por el Aula Virtual (herramienta Tareas). Tenga en cuenta en cuenta que:
+\begin{itemize}
+\item Se deberá presentar en el fichero .zip \key{la misma versión} del repositorio con la que hayan realizado la parte documental a efectos de poder reproducir los resultados.
+
+\item La entrega del código no le exime de la exigencia de que se pueda ejecutar en Colab.  
+\end{itemize}
+
+
+\item Las exposiciones del informe técnico, que serán grabadas, tendrán lugar el \hl{2 y el 5 de marzo}. Las horas de esos días se dedicarán en exclusividad a las exposiciones, sin importar el número de presentados.
+
+\end{itemize}
+\end{importantbox}
+
+
+
+
+\subsection{Componente Escrita}
+
+Es importante que parte escrita (el fichero .pdf) se  estructure de manera clara. 
+Para ello, en la portada se pondrá un \textbf{título} y a \textbf{los autores.} Incluya el nombre de la obra y los nombres completos de los autores del trabajo, junto con el correo electrónico um.es para cada autor.
+
+Además, para cada parte deberá incluir, en términos generales,  los siguientes apartados:  
+
+
+\begin{enumerate}
+    \item \textbf{Introducción:}
+    \begin{itemize}
+        \item Breve descripción del problemas y su relevancia.
+        \item Motivación del trabajo: ?`Por qué es importante el problema estudiado?
+        \item Objetivos del informe: ?`Qué se pretende lograr con el desarrollo del trabajo?
+        \item Organización del documento: breve explicación de la estructura del informe.
+    \end{itemize}
+    \item \textbf{Desarrollo:} 
+    \begin{itemize}
+        \item Definición formal del problema o aplicación específica abordada.
+        \item Describir enfoques existentes en la literatura sobre problemas similares.
+        \item Contexto y antecedentes necesarios para entender el trabajo.
+        \item Explicación de los métodos utilizados para abordar el problema.
+        \item Justificar cómo el presente trabajo se diferencia o mejora enfoques previos.
+    \end{itemize}
+    \item \textbf{Algoritmos:}
+    \begin{itemize}
+        \item Indicar los pasos de los algoritmos empleados.
+        \item Expresarlos en pseudocódigo y, opcionalmente, diagramas de flujo si es necesario.
+        \item Justificar la elección de los algoritmos y su aplicabilidad al problema estudiado.
+    \end{itemize}
+    \item \textbf{Evaluación/Experimentos:}
+    \begin{itemize}
+        \item Configuración experimental: herramientas, entornos de prueba, datasets empleados, etc.
+        \item Métricas utilizadas para evaluar el desempeño del método propuesto.
+        \item Resultados obtenidos, presentados en tablas o gráficos según corresponda.
+        \item Análisis crítico de los resultados y comparación con otros enfoques.
+    \end{itemize}
+    \item \textbf{Conclusiones:}
+    \begin{itemize}
+        \item Un resumen de los principales resultados obtenidos.
+        \item Limitaciones del estudio y posibles mejoras futuras.
+        \item Reflexión sobre la importancia del trabajo y su impacto en el campo del aprendizaje por refuerzo.
+        \item Líneas \textit{futuras} de estudio.
+    \end{itemize}
+    \item \textbf{Bibliografía:} Listar todas las referencias utilizadas en el trabajo. Se recomienda utilizar un gestor de referencias como BibTeX para facilitar la organización de las citas. Se recomienda en las referencias el enlace URL donde se encuentre el repositorio GitHub donde reproducir lo documentado.
+    
+\begin{importantbox}
+\begin{itemize}
+\item Desarrolle los apartados teniendo en cuenta los criterios de evaluación.
+
+\item El documento se desarrollará, necesariamente, \textbf{\color{red} de acuerdo a la plantilla} que tienen en recursos del Aula Virtual.
+
+\item Sean siempre \textbf{claros y concisos} en su informe, enfocándose en los \textbf{puntos clave} sin omitir de mencionar y explicar los \textbf{detalles importantes}. 
+
+
+\item Cada apartado podrá contener subapartados; pero cada (sub)apartado del documento se desarrollará con la extensión que sea acorde a lo que se presenta. No desarrolle (sub)apartados con contenidos innecesarios. 
+
+\item Si lo prefiere, puede crear un documento con solo dos partes: (1) el bandido de k-brazos, y (2) Aprendizaje en entornos complejos y en este último distinguir entre métodos tabulares y aproximados.
+
+\item La extensión del documento escrito (.pdf) no superará las \tachar{10 páginas} \hl{10 folios}, descontada la carátula, índice, la bibliografía y anexos (si procedieran).
+
+\end{itemize}
+\end{importantbox}
+
+\end{enumerate}
+
+
+
+\subsection{Componente Experimental}
+
+Cada parte tendrá su componente experimental que respaldará la componente documental explicada en el apartado anterior. Cada componente experimental constará de tantos notebooks y ficheros .py como considere necesarios, siempre que sirvan de respaldo a lo documentado.
+
+En definitiva, la componente escrita (fichero .pdf) tendrá su correspondiente respaldo en \textbf{GitHub} y su contenido debe seguir las siguientes instrucciones:
+
+
+
+
+
+\begin{enumerate}
+\item Crear un repositorio llamado \textbf{NombreGrupo}, donde \textbf{NombreGrupo} es el nombre del grupo. Por ejemplo, los primeros apellidos de sus miembros.
+
+\item Incluir los \textit{notebooks} \textbf{ya resueltos} (ejecutados) en el repositorio.
+
+\item Incluir \key{en el repositorio} un fichero README.md con los siguientes datos.
+
+
+\begin{quote}\footnotesize
+\begin{verbatim}
+# Título del Trabajo
+
+## Información
+- **Alumnos:** Apellido1, Nombre1; Apellido2, Nombre2; Apellido3, Nombre3
+- **Asignatura:** Nombre de la asignatura
+- **Curso:** 2025/2026
+- **Grupo:** NombreGrupo (p.e. ap1ap2ap3m, usando los apellidos)
+
+## Descripción
+[Breve descripción del trabajo y sus objetivos]
+
+## Estructura
+[Explicación de la organización del repositorio]
+
+## Instalación y Uso
+[Instrucciones si son necesarias]
+
+## Tecnologías Utilizadas
+[Lista de lenguajes, frameworks, etc.]
+\end{verbatim}
+\end{quote}
+
+
+\item El repositorio tendrá la siguiente estructura general para cada parte:
+
+
+\begin{verbatim}
+trabajo/
+|__ src/     # Código .py (expanda src, o considere varios src con distintos nombres)
+|__ docs/            # Documentación ( .bib, .pdf, ... si procede)
+|__ tests/           # Tests (si aplica)
+|__ data/            # Datos necesarios (si aplica)
+|__ README.md 
+|__ main.ipynb       # Fichero principal
+|                    # Breve introducción del problema y enlace a los estudios.
+|__ notebook1.ipynb  # P.e. presentación de métodos tabulares
+|__ notebook2.ipynb  # P.e. presentación de métodos aproximados
+|__ etc.ipynb        # Recuerde poner tantos como estudios realizados
+\end{verbatim}
+
+Utilice \key{nombre significativos} en cada uno de los ficheros y añada cuantos ficheros \texttt{README.md} sean necesarios para aclarar el contenido de cada directorio.
+
+~
+
+\item Todo se podrá ejecutar en Colab.  
+
+El fichero {\color{red}\verb+main.ipynb+} comenzará con el típico enlace de \raisebox{-0.25\height}{\includegraphics[scale=.5]{OpenInColab}}, que abrirá el notebook en Colab.
+{\scriptsize \verb+https://colab.research.google.com/github/+\color{red}\verb+autores/trabajo_NombreGrupo/+\color{black}\verb+blob/main/+\color{red}\verb+main.ipynb+}
+
+
+
+Las primeras celdas del \textit{notebook} principal harán una copia del repositorio y se instalarán los paquetes que sean necesarios. A partir de dicho \textit{notebook} se podrá navegar entre los distintos \textit{notebooks}.
+
+
+
+\begin{importantbox}
+
+Tenga en cuenta los siguiente:
+
+\begin{itemize}
+\item El enlace \raisebox{-0.25\height}{\includegraphics[scale=.5]{OpenInColab}}  se consigue de forma automática al salvar el \texttt{notebook} desde Colab en el repositorio.
+
+\item Intente usar la misma estructura que en el documento .pdf. Por ejemplo, si distingue 3 partes en el documento .pdf, distinga 3 partes en el directorio \texttt{src} y al menos 3 \texttt{notebooks} con nombre identificativos de cada parte. 
+
+
+\item 
+Asegúrese de que cada \texttt{notebook} tenga la  \textbf{\color{red} semilla} de generación de números aleatorios que permita reproducir las gráficas o tablas de las componentes documentadas. 
+
+\item
+El \textbf{\color{red} prerequisito} para la evaluación es que al entrar por primera vez en el \textit{notebook} y seleccionar la opción \underline{\texttt{Entorno de ejecución >\/   Ejecutar todas}} \textbf{no se produzcan errores} y el resultado final sea exactamente el mismo al que se encuentra en el repositorio. Es decir, que sus notebooks y lo documentado \textbf{son reproducibles}.
+
+\begin{itemize}
+\item 
+Tendrán que garantizar que las celdas iniciales de cada \textit{notebook} realicen todo lo necesario para que no se produzca error alguno en su ejecución.
+
+\item La no-ejecución completa de un notebook, conlleva que todo su contenido quedará descartado y no se considerará superado.
+\end{itemize}
+
+\end{itemize}
+\end{importantbox}
+
+
+\end{enumerate}
+
+
+\subsection{Presentación del Informe Técnico por el Aula Virtual}
+
+En el Aula Virtual deberá de presentar la evidencia del trabajo realizado en \textbf{un único fichero .zip} que contenga el fichero .pdf de la componente escrita y el repositorio completo que respalda al documento. 
+
+De acuerdo a lo explicado anteriormente, se espera que en la descompresión del fichero .zip se muestre una  estructura general similar a la Figura \ref{fig:zip}.
+
+\begin{figure}[htb]
+\hfil\begin{minipage}{.7\textwidth}
+\scriptsize
+\begin{verbatim}
+NombreGrupo (github)
+|__ informe.pdf    # Informe técnico (se espera no más de 10 folios de contenido)
+|__ main.ipynb     # Fichero principal que accede a los distintos main.ipynb de cada parte
+|__ k_brazos
+|     |__ src/     # Código .py (expanda src, o considere varios src con distintos nombres)
+|     |__ docs/            # Documentación ( .bib, .pdf, ... si procede)
+|     |__ tests/           # Tests (si aplica)
+|     |__ data/            # Datos necesarios (si aplica)
+|     |__ README.md 
+|     |__ main.ipynb       # Fichero principal de esta parte
+|     |                    # Breve introducción del problema y enlace a los estudios.
+|     |__ notebook1.ipynb  # P.e. presentación de métodos epsilon-greedy
+|     |__ etc.ipynb        # Recuerde poner tantos como estudios realizados
+|__ Entornos_Complejos
+      |__ src/     # Código .py (expanda src, o considere varios src con distintos nombres)
+      |__ docs/            # Documentación ( .bib, .pdf, ... si procede)
+      |__ tests/           # Tests (si aplica)
+      |__ data/            # Datos necesarios (si aplica)
+      |__ README.md 
+      |__ main.ipynb       # Fichero principal de esta parte
+      |                    # Breve introducción del problema y enlace a los estudios.
+      |__ notebook1.ipynb  # P.e. presentación de métodos tabulares
+      |__ etc.ipynb        # Recuerde poner tantos como estudios realizados
+\end{verbatim}
+\end{minipage}
+\caption{Estructura esperada del fichero .zip
+ si considera que su documento .pdf se divide en dos partes} \label{fig:zip}
+\end{figure}
+
+\begin{importantbox}
+Es fundamental que todo el fichero .zip se descomprima \textbf{\color{red}a partir de un directorio} cuyo nombre se identifique con el nombre del grupo.
+\end{importantbox}
+
+\NOTA{El enlace a Colab siempre funcionará.} \textit{No importa si el repositorio lo tenéis público o privado. Eso no afectará a la comprobación del código. Lo importante, y \textbf{se insiste} en ello, es que esté el enlace a Colab y se respete en el fichero .zip la misma estructura (y ficheros actualizados) que se tiene en el repositorio con el que se han realizado las pruebas.}
+
+
+\subsection{Componente Oral}
+
+En los apartados anteriores se ha mostrado en qué consiste la componente escrita, la componente experimental y cómo se deben de presentar ambas en el Aula Virtual. Pero recuerde que debe de hacer una exposición pública de lo presentado. 
+
+En este sentido, de acuerdo al número de alumnos matriculados, si todos se presentaran a la exposición por videoconferencia (zoom), cada uno tendrá una intervención de unos 4', supuesto que no hay descansos y no hay problemas técnicos.
+
+Para la exposición puede utilizar cuantos recursos sean necesarios siempre que sean visibles a través de la aplicación Zoom (transparencias, vídeos, animaciones, etc). Tenga en cuenta los criterios de evaluación que se han indicado en la sección \ref{subsec:presentacion}.
+
+
+\begin{importantbox}
+A efectos de conocer el tiempo real de exposición que tendrá cada grupo, deberán notificar, a más tardar el \hl{28 de febrero} y antes de las 14h, quiénes presentarán el trabajo completo. El mismo día 28 se anunciará el orden de defensa de los trabajos, que se seleccionarán de forma aleatoria.
+
+Recuerde que las exposiciones del informe técnico, que serán grabadas, tendrán lugar el \hl{2 y el 5 de marzo}.
+\end{importantbox}
+
+
+
+\subsection{¿Lo estamos habiendo bien?}
+
+\NOTA{Ante las preguntas continuas sobre si lo hago bien  o lo hago mal.} 
+
+
+Es importante aclarar algo fundamental: \textbf{en ningún momento se exige que debáis presentar exactamente los problemas con las técnicas implementadas a modo de ejemplos localizados en el Github \url{https://github.com/ldaniel-hm/}}. Por ejemplo, \key{no se pide} que se entregue el problema \textbf{FrozenLake} con Monte Carlo tal y como aparece en el notebook del repositorio o con modificaciones estéticas. Este notebook, \textbf{como todos los demás} del github, son puntos de referencia para que empecéis a experimentar con vuestros propios entornos.
+
+El objetivo de la práctica no es reproducir exactamente un experimento estándar, sino desarrollar \textbf{vuestro propio estudio experimental}, con criterio metodológico y justificación técnica. De hecho, en el enunciado aparece explícitamente la advertencia de que: \textit{"No se busca reproducir un experimento típico de internet. La originalidad metodológica forma parte de la evaluación"{}}. \textit{"{}Reproducir algo muy similar a lo que aparece en tutoriales públicos (como los de Gymnasium) puede ser considerado falta grave de originalidad académica, incluso aunque no haya copia literal de código."{}} 
+
+$ $\hfill \key{Relean los criterios de evaluación.}
+
+El foco no está en si cambiáis una media que aparece en un git-hub o tutorial por otra medida, lo importante es:
+
+\begin{itemize}
+\item
+Qué problema planteáis.
+\item
+Qué diseño experimental habéis definido.
+\item
+Cómo lo justificáis.
+\item
+Cómo analizáis los resultados.
+\item
+Qué conclusiones extraéis.
+\item
+Y cómo defendéis todo ello en el informe y en la exposición.
+\end{itemize}
+
+
+
+Para definir adecuadamente las métricas, gráficas y análisis experimentales, se recomienda revisar tanto las transparencias de la asignatura como el libro de Sutton y Barto (Reinforcement Learning: An Introduction). En ellos encontraréis ejemplos con respaldo teórico sobre cómo evaluar algoritmos de aprendizaje por refuerzo: evolución de la recompensa media por episodio, aprendizaje a corto plazo o a largo plazo, rendimiento promedio sobre múltiples ejecuciones independientes, comparación entre episodios completos y parciales, error cuadrático medio en estimaciones de valor, longitud media del episodio hasta la convergencia, tasa de éxito, varianza del retorno, curvas de aprendizaje suavizadas,  análisis de estabilidad frente a distintas semillas aleatorias, etc. No se trata de elegir gráficas “estéticas”, sino \textbf{métricas que tengan fundamento científico} y que permitan interpretar con rigor el comportamiento y la convergencia del algoritmo. Obviamente también hay que tener en cuenta, en su caso, los parámetros propios del algoritmo de estudios como valores de $\epsilon$ para una política, número de pasos en diferencias temporales, parámetro $\alpha$ de aprendizaje, etc ...
+
+De manera anecdótica se pueden mostrar otras gráficas como, por ejemplo, la política que sigue el agente en el problema del \textbf{FrozenLake} mediante flechas; pero la pregunta es ¿qué aporta esa gráfica en el análisis que se hace en el documento escrito? ¿Por qué no dibujar los episodios como un conjunto de líneas o simplemente como la secuencia de acciones adoptadas? ¿Sirve esa representación para mostrar la política en otros entornos de Gymnasium? ¿En todos los entornos hay flechas? ¿Eso permite evaluar o mejorar la calidad de la técnica de Aprendizaje por Refuerzo? ¿Aporta valor metodológico? ¿a qué pregunta experimental responde? ...
+
+
+Por favor, distinguid bien las gráficas de una buen análisis de las gráficas anecdóticas que no son generalizables. ¿Se puede usar alguna? Sí, pero no influye tanto en la evaluación. Recordad bien los \textbf{criterios de evaluación} ya publicados (claridad, rigor técnico, originalidad metodológica, proceso experimental, capacidad de análisis crítico, referencias, coherencia entre código, documento y defensa, etc.). \key{Relean los criterios de evaluación.}
+
+
+Algunos me preguntáis si lo que queréis hacer es lo correcto pero este trabajo \textbf{no debe entenderse como una práctica guiada} paso a paso con soluciones cerradas, sino como un proyecto propio en el que el grupo \textbf{asume la responsabilidad del diseño metodológico, la experimentación y el análisis}. Por supuesto, \key[red!80!black]{se darán todas las orientaciones generales o aclaraciones \underline{conceptuales} necesarias para ayudaros en vuestro trabajo}, pero \key{no corresponde confirmar de antemano si una propuesta concreta “{}es correcta al 100\%{}” antes de su evaluación formal}. 
+
+Parte del aprendizaje consiste precisamente en \key{asumir decisiones} técnicas, justificarlas y sostenerlas con argumentos sólidos.
+En este sentido, el alumnado debe atreverse a tomar iniciativas, plantear hipótesis, elegir métricas y diseñar experimentos con criterio propio. El riesgo razonado, \textbf{siempre respaldado teóricamente y bien documentado}, forma parte natural de un proyecto académico de estas características y es coherente con el tipo de competencias que se pretende evaluar.
+
+Por tanto, insistiendo en este aspecto, entended también que \key{no procede que yo os confirme previamente si lo que vais a presentar “{}está bien{}” o “{}está mal{}”}. Esa valoración forma parte del proceso oficial de evaluación y se realizará cuando entreguéis el informe y lo defendáis públicamente. No sería adecuado anticipar juicios parciales sobre decisiones concretas sin ver el trabajo completo, debidamente contextualizado y justificado. El foco debe ponerse en la calidad global del trabajo, \key{no en que yo os valide previamente} decisiones puntuales.
+
+
+Lo que sí debéis tener muy presentes son los criterios ya publicados: se evaluará la \textbf{originalidad metodológica} del estudio (evitando reproducir experimentos estándar fácilmente localizables), el \textbf{respaldo teórico} de las decisiones adoptadas, el \textbf{rigor del diseño experimental}, la calidad del análisis y también la \textbf{dificultad y relevancia del problema tratado}. No se trata de introducir modificaciones superficiales sobre algo conocido, sino de plantear un estudio con criterio propio, bien argumentado y técnicamente sólido.
+
+Además, recordad que \key{el informe escrito debe ser autosuficiente y explicativo por sí mismo}. Es decir, cualquier lector debería poder comprender el problema planteado, el marco teórico, los algoritmos utilizados, la configuración experimental, los resultados y las conclusiones sin necesidad de "{}mirar el código"{} de un notebook para entender se ha hecho. 
+
+\key{Los notebooks no sustituyen al informe:} su función es \textbf{respaldar y reproducir} lo que se documenta en el PDF y, si procede, ampliar con material experimental adicional o anexos técnicos. 
+
+\textbf{El núcleo evaluable es el trabajo razonado, estructurado y justificado que presentáis en el documento, no únicamente en una implementación más o menos} \key{eficiente.} 
+
+
+Si vuestra propuesta es coherente, está bien fundamentada y sois capaces de defenderla con solvencia técnica, no deberíais preocuparos. Centraros en la calidad global del trabajo que estáis construyendo y no en si debe parecerse más o menos a unos notebooks que haya puesto alguien en algún lugar de internet.
+
+
+
+
+
+
+
+
+\section{Partes del Trabajo}
+
+
+Como se ha indicado anteriormente, el trabajo constará de \hl{~ 3 ~} partes:
+\begin{itemize}
+\item Parte 1: Problema del Bandido de k-brazos.
+\item Parte 2: Técnicas tabulares de Aprendizaje por Refuerzo.
+\item Parte 3: Técnicas aproximadas de Aprendizaje por Refuerzo.
+\end{itemize}
+
+
+ A efectos conceptuales se describe cada una de ellas dividiendo las técnicas en dos grupos:
+ \begin{itemize}
+ \item \textbf{Grupo 1.} Aprendizaje en el bandido de k-brazos
+ \item \textbf{Grupo 2}. Aprendizaje en entornos complejos
+ \end{itemize}
+ 
+
+
+
+\subsection{Grupo 1. Bandido de k-brazos}
+
+El problema del bandido multibrazo es el mejor ejemplo del dilema de la \textbf{Exploración-Explotación} en el contexto del aprendizaje por refuerzo. Los mejores algoritmos son los que son capaces de encontrar el mejor equilibrio entre ambas opciones. 
+
+\subsubsection{Plateamiento del Problema}
+
+El \textbf{problema del bandido de \( k \)-brazos} modela una situación de toma de decisiones secuencial bajo incertidumbre. Consideraremos entorno estacionarios. Consiste en lo siguiente:
+
+\begin{itemize}
+    \item Una máquina tragaperras con \( k \) brazos (acciones)
+    \item Cada brazo \( i \) tiene una distribución de recompensa desconocida \( \mathcal{P}_i \)
+    \item En cada paso \( t \), el agente:
+    \begin{enumerate}
+        \item Elige un brazo \( a_t \in \{1,\ldots,k\} \)
+        \item Recibe una recompensa \( r_t \sim \mathcal{P}_{a_t} \)
+    \end{enumerate}
+    \item El objetivo es maximizar la \textbf{recompensa acumulada} $\sum_{t=1}^T r_t$ donde \( T \) es el horizonte temporal.
+\end{itemize}
+
+Existen varios criterios para seleccionar una alternativa. Por ejemplo:
+\begin{itemize}
+    \item Una política es tomar decisiones que tengan en cuenta aquellos brazos que, por la experiencia, han mostrado tener mayores recompensas. 
+    \item Alternativamente, otra forma de medir las mejores decisiones es considerar como medida de desempeño el \textcolor{UMUblue}{\textbf{rechazo}} (\textit{regret}) que cuantifica la pérdida por no elegir siempre el mejor brazo:
+\[
+R(T) = T\mu^* - \mathbb{E}\left[\sum_{t=1}^T \mu_{a_t}\right]
+\]
+donde \( \mu^* = \max_i \mu_i \) y \( \mu_i = \mathbb{E}[\mathcal{P}_i] \).
+
+\end{itemize}
+
+
+
+
+\subsubsection{Tareas a realizar}
+
+En este grupo se analizan los algoritmos que resuelven el problema del bandido de \( k \)-brazos, comparando sus rendimientos. \textsc{Idealmente}, se trataría de implementar varias familias de métodos (\(\epsilon\)-greedy, UCB, ascenso del gradiente, bayesianos, etc) evaluando las recompensas y rechazos acumulados para detectar \textit{el mejor} algoritmo dentro de cada familia.
+
+
+Las tareas a realizar en esta primera parte son las siguientes. 
+\begin{itemize}
+\item Construir varios tipos de brazos.
+\item Completar el estudio de la familia $\epsilon$-greedy que ya ha presentado el profesor
+\item Implementación de otros algoritmos.
+\item Realizar un estudio comparativo
+\end{itemize}
+
+\
+
+\centerline{\textbf{Tipos de bandidos}} 
+
+Cuando se selecciona un acción (un bandido), se retorna una recompensa que se rige por una distribución de probabilidad desconocida: \( r \sim \mathcal{P}_{a} \)
+
+Un tipo de distribución es la \textbf{distribución Binomial}, ${\cal B}(n,p)$. Es cuando nos referimos a que, si realizamos $n$ acciones, el \textbf{número total de éxitos} (recompensas positivas) se dará con probabilidad $p$. 
+
+La distribución Bernoulli es un caso particular de la binomial, para $n=1$. Se corresponde a considerar situaciones de éxito o fracaso como el caso del suministro de medicamentos.
+
+
+
+Si $X\sim {\cal B}(n,p)$ con $np\geq 5$ y $n(1-p)\geq 5$ se garantiza que la distribución binomial no está demasiado sesgada y tenga una forma aproximadamente simétrica.
+Entonces se puede hacer una \textbf{aproximación normal}:
+$
+X \approx \mathcal{N}(\mu, \sigma^2)
+$
+donde:  \( \mu = n p \) y \( \sigma^2 = n p (1 - p) \). 
+
+No obstante, hay problemas donde surge de forma natural el uso de una distribución Distribución Normal, ${\cal N}(\mu, \sigma^2)$, en cada uno de los brazos. 
+
+
+En la sección \ref{sec:ejem-k-bandidos} tiene ejemplos de uso de estos 3 tipos de distribuciones en el contexto del bandido de k-brazos.
+
+
+
+\subsubsection*{¿Qué debe de hacer?}
+
+Implemente los bandidos con estas distribuciones de probabilidad.  Recuerde que los basados en la distribución normal ya están implementados y que la Benoulli es un caso particular de la binomial. 
+
+ 
+\
+
+\centerline{\textbf{Completar el estudio de la familia $\epsilon$-greedy}} 
+
+ 
+El notebook \href{https://githubtocolab.com/ldaniel-hm/eml_k_bandit/blob/main/bandit_experiment.ipynb}{bandit\_experiment.ipynb} situado en el repositorio \href{https://github.com/ldaniel-hm/eml_k_bandit}{ldaniel-hm/eml\_k\_bandit} localizado en \href{https://github.com/ldaniel-hm/}{GitHub} es un ejemplo de cómo se pueden estudiar los algoritmos del bandido de k-brazos. En este documento se comparan tres algoritmos $\epsilon$-greedy. Pero observa que el código del repositorio está incompleto. En esta parte queremos hacer un estudio más completo sobre este conjunto de técnicas. 
+
+Para completar el estudio vamos a \key{añadir más gráficos}. Se consideran  las siguientes gráficas:
+
+\begin{itemize}
+\item \textbf{(Necesaria)} Mostrar el porcentaje en el que fue seleccionado el brazo óptimo.
+
+
+\begin{pyverbatim}[][fontsize=\scriptsize]
+def plot_optimal_selections(steps: int, 
+							optimal_selections: np.ndarray, 
+							algorithms: List[Algorithm]):
+    """
+    Genera la gráfica de Porcentaje de Selección del Brazo Óptimo vs Pasos de Tiempo.
+
+    :param steps: Número de pasos de tiempo.
+    :param optimal_selections: Matriz de porcentaje de selecciones óptimas.
+    :param algorithms: Lista de instancias de algoritmos comparados.
+    """
+\end{pyverbatim}
+
+
+
+
+\item \textbf{(Necesaria)} Mostrar la evolución del rechazo, de forma análoga a cómo se muestra la evolución de las recompensas.
+
+
+\begin{pyverbatim}[][fontsize=\scriptsize]
+def plot_regret(steps: int, 
+				regret_accumulated: np.ndarray, 
+				algorithms: List[Algorithm], *args):
+    """
+    Genera la gráfica de Regret Acumulado vs Pasos de Tiempo 
+
+    :param steps: Número de pasos de tiempo.
+    :param regret_accumulated: Matriz de regret acumulado (algoritmos x pasos).
+    :param algorithms: Lista de instancias de algoritmos comparados.
+    :param args: Opcional. Parámetros que consideres. P.e. la cota teórica Cte * ln(T).
+    """
+\end{pyverbatim}
+
+
+
+\item \textbf{(Opcional)} Mostrar las estadísticas de cada brazo. Cada valor en el eje X  representará un brazo. En el eje Y se representa el promedio de las ganancias de cada brazo. El gráfico  mostrará un histograma para cada brazo donde se muestre el promedio de las ganancias obtenidas pero en el eje X, como etiqueta, se mostrará también el número de veces que fue seleccionado el brazo e indicar si es el brazo óptimo o no.
+
+Añade lo que considere necesario que ayude a clarificar el significado de la gráfica.
+
+
+
+\begin{pyverbatim}[][fontsize=\scriptsize]
+def plot_arm_statistics(arm_stats: LoQueConsideres, 
+						algorithms: List[Algorithm], *args):
+    """
+    Genera gráficas separadas de Selección de Arms: 
+    										Ganancias vs Pérdidas para cada algoritmo.
+
+    :param arm_stats: Lista (de diccionarios) con estadísticas de cada brazo por algoritmo.
+    :param algorithms: Lista de instancias de algoritmos comparados.
+    :param args: Opcional. Parámetros que consideres
+    """
+\end{pyverbatim}
+
+\end{itemize}
+
+\NOTA{Rectificación sobre el nombre de los métodos.} \textit{Aunque se mantiene el propósito necesario/obligatorio de cada apartado gráfico, se rectifica la definición de los métodos \texttt{plot\_regret}  y \texttt{plot\_arm\_statistics} en los dos últimos apartados. En versiones anteriores a este documento estaban intercambiados. Tal y como está ahora es lo correcto.}
+
+
+\subsubsection*{¿Qué debe de hacer?}
+
+\begin{itemize}
+\item Modifique los ficheros  \href{https://githubtocolab.com/ldaniel-hm/eml_k_bandit/blob/main/bandit_experiment.ipynb}{bandit\_experiment.ipynb} y \url{https://github.com/ldaniel-hm/eml_k_bandit/blob/main/plotting/plotting.py}{plotting.py} para incluir en el estudio original las gráficas indicadas.
+
+\item Cuando complete el estudio de la familia de algoritmos $\epsilon$-greedy, indique cuál de todas las gráficas que se piden son las más relevantes ?`por qué es esa gráfica o esas gráficas las más importantes?
+\end{itemize}
+
+\begin{importantbox}
+\begin{itemize}
+\item Realice representaciones con pocas gráficas. P.e. sería un gran error hacer una gráfica para mostrar 10 algoritmos de la familia $\epsilon$-gredy.
+
+\item Se pueden modificar los parámetros de las funciones obligatorias de dibujo si se viera conveniente mientras que cumpla con su objetivo  (aquí solo se da una propuesta). 
+
+\item Tienen libertad para modificar el resto del código del repositorio si se viera necesario.
+\end{itemize}
+
+\end{importantbox}
+
+
+
+\
+
+\centerline{\textbf{Implementación de otras familias de algoritmos}}
+
+Hay varias familias de algoritmo  para resolver el problema del bandido de k-brazos. Podemos destacar las siguientes familias. 
+
+\begin{itemize}
+\item Métodos Greedy: $\epsilon$-greedy, $\epsilon$-decaimiento.
+\item Métodos UCB: UCB1, UCB2, UCB1-Tuned, UCB-V, UCB-Decay(a), etc.
+\item Métodos de Ascenso del Gradiente:  Softmax y Gradiente de Preferencias.
+\end{itemize}
+
+
+
+\subsubsection*{¿Qué debe de hacer?}
+
+Debe implementar los métodos $\epsilon$-greedy, UCB1 y Softmax. 
+
+Opcionalmente, si quiere, puede implementar $\epsilon$-decaimiento para compararlo con $\epsilon$-greedy y/o UCB2 para compararlo con UCB1.
+
+
+\
+
+\centerline{\textbf{Realizar un estudio comparativo}}
+
+\subsubsection*{¿Qué debe de hacer?}
+
+
+
+\begin{itemize}
+\item Estudie los algoritmos $\epsilon$-greedy, UCB1 y Softmax   usando los siguiente tipos de bandidos. 
+
+\begin{itemize}
+\item Distribución Bernoulli. Cada brazo solo puede dar dos resultados: éxito, 1, o fracaso, 0.  
+
+\item Distribución Binomial. A cada brazo se le asocia una distribución ${\cal B}(n,p)$. 
+
+\item Distribución Normal. Cada brazo sigue una ${\cal N}(\mu, \sigma^2)$.
+\end{itemize}
+
+\item \textbf{\color{red}Para cada estudio} \hl{que realice} construya un notebook diferente.
+
+
+\NOTA{Los estudios forman parte de la evaluación.}
+\textit{Tenga en cuenta que el diseño de los experimentos forma parte de la evaluación pues conlleva dominio del contenido, justifica el proceso experimental y se tiene capacidad crítica. Evaluar, sintetizar y analizar (formular hipótesis, criticar, experimentar, incorporar, combinar, juzgar, probar, detectar, enlazar resultados, calificar, estimar, comprobar coherencia de lo obtenido, etc ...) son capacitaciones que deben mostrarse en un máster.}
+
+
+\item Utilice siempre la misma semilla para la generación de números aleatorios para que sus gráficas sean reproducibles.
+
+\item Opcionalmente, puede incluir $\epsilon$-decaimiento y/o UCB2.
+\end{itemize}
+
+Realizada la experimentación, desarrolle la componente escrita.
+
+
+\NOTA{La documentación es limitada pero el contenido del Github no.}
+\textit{Los notebooks puede contener toda la experimentación que consideréis. P.e. se podría ensayar con varias binomiales o con varias normales, considerando varios valores para sus parámetros. A su vez con las normales se puede considerar una desviación de 1, una desviación de 50 y otra de 100 para las mismas medias. Alternativamente se podría comprobar con 10, 20 o 100 brazos, etc, etc.
+Los ensayos pueden ser tantos como queráis pero en el documento os tenéis que limitar a los resultados más relevantes y que tengan una justificación desde el punto de vista teórico. P.e. no tendría sentido hacer una experimentación UCB donde cada brazo se ejecuta una vez. Eso es lo que hace un "{}investigador"{}. Ensayar mucho pero publicar poco: no se puede publicar todo lo que se experimenta y hay que limitarse a una interpretación crítica de los resultados en función de los planteado que, a su vez, viene dado por el conocimiento "profundo"{} del problema/algoritmos.}
+
+
+
+
+\subsection{Grupo 2. Aprendizaje en entornos complejos}
+
+
+
+El bandido de $k$-brazos permite estudiar el problema de la explotación y exploración en entornos que no cambian. Sin embargo, lo cierto es que cada toma de decisiones se desarrolla en un contexto. Una forma de abordar el problema es mediante bandidos contextuales. Otra forma, la más habitual, es considerar que las decisiones se rigen por un proceso de decisión de Markov con recompensas (que podrían ser estocásticas). La forma más correcta de resolver este problema es mediante las ecuaciones de Bellman que se pueden resolver mediante cálculo matricial o cálculo iterativo, para lo que se supone que conoce todo (la política correcta, la matriz de transiciones  y las recompensas). 
+
+Pero lo cierto es que en este tipo de problemas no se suele conocer el modelo que rige el entorno ni se sabe que recompensas nos podemos encontrar y mucho menos cuál es la mejor decisión que se debería de tomar en un estado. Para solucionar el problema se recurre a la experiencia del agente cuando transita por el entorno. Así surge un grupo de técnicas que se basan en aplicar la siguiente secuencia de pasos:
+
+\begin{enumerate}
+\item El agente observa el estado actual del entorno.
+\item Basándose en este estado, el agente toma una acción (de acuerdo a una política) si no está en un estado terminal.
+\item El entorno cambia a un nuevo estado como resultado de la acción.
+\item El agente recibe una recompensa que se usará para evaluar la acción tomada.
+\item Se vuelve al paso 1.
+\end{enumerate}
+
+Las técnicas de Monte Carlo esperan a que el agente llegue al estado terminal para considerar el episodio y a partir de él actualiza su política (la toma de decisiones en cada estado) para maximizar la recompensa acumulativa futura. Las técnicas de Diferencias Temporales van actualizando la política  confirme va tomando decisiones, sin esperar a llegar a un estado terminal. En medio están las que consideran solo algunas primeras recompensas del episodio. Estas técnicas se basan en usar una representación tabular de las funciones de evaluación de estados y acciones.
+
+En ocasiones la cantidad de estados y acciones es tan enorme, que no queda más remedio que recurrir a funciones aproximadas de las funciones de evaluación, lo que da lugar a todo un conjunto de técnicas basadas en el método del descenso del gradiente (como el uso de redes neuronales). Alternativamente, otro grupo de técnicas se enfocan en optimizar la política directamente lo que da lugar a los métodos Actor-Crítico.
+
+
+Las tareas a realizar en esta parte son las siguientes.
+
+\begin{itemize}
+\item Conocer el entorno Gymnasium
+\item Estudio de algunos algoritmos básicos
+\end{itemize}
+
+
+\subsection*{A) Conocer el entorno Gymnasium}
+
+Gymnasium (\url{https://gymnasium.farama.org/}) es un entorno que permite ensayar con distintos algoritmos de aprendizaje que se usará para este segundo grupo de algoritmos. Para entender su funcionamiento debe de entender:
+
+\begin{itemize}
+\item El último apartado (sección \ref{sec:gymnasium})
+\item La documentación básica de \href{https://gymnasium.farama.org/}{Gymnasium}. 
+\item Su aplicación en el notebook \\
+\url{https://github.com/ldaniel-hm/eml_tabular/blob/main/MonteCarloTodasLasVisitas.ipynb}.
+\end{itemize}
+
+Notar que \nuevo{la versión implementada en el notebook no es de Monte Carlo} (pues se calcula \textit{hacia adelante} en vez de \textit{hacia atrás} y casualmente $f(t)=\frac{\sum_{i=1}^t R_i}{t}$ está dando un indicador que parece evolucionar correctamente; pero no deja de ser un algoritmo de aprendizaje sin fundamente teórico).
+
+\subsubsection*{¿Qué debe de hacer?}
+
+\textbf{Modifique el código} para que haga lo siguiente:
+\begin{itemize}
+\item Construya un agente de acuerdo a las indicaciones de Gymnasium para que aprenda de acuerdo al algoritmo explicado en el notebook. El diseño le servirá para usarlo en el resto de la práctica. La sección \ref{sec:gymnasium} está basada en la documentación oficial \url{https://gymnasium.farama.org/introduction/train_agent/}
+
+\item Añada una gráfica más. Construya una gráfica que utilice  $f(t)=len(episodio_t)$. ?`Por qué esta gráfica también es un buen indicador de aprendizaje? 
+\end{itemize}
+
+
+  
+
+\subsection*{B) Estudio de algunos algoritmos básicos}
+
+
+\subsubsection*{¿Qué debe de hacer?}
+
+
+Desarrolle estudios comparativos entre las distintas técnicas vistas en clase. 
+\begin{description}
+\item[Parte 2.] \textbf{Métodos Tabulares:} 
+	\begin{itemize}
+	\item Monte Carlo (on-policy y off-policy)
+	\item Diferencias temporales (SARSA, Q-Learning)
+	\end{itemize}
+	
+\item[Parte 3.] \textbf{Control con Aproximaciones:} 
+	\begin{itemize}
+	\item SARSA semi-gradiente
+	\item Deep Q-Learning. 
+	\end{itemize}
+\end{description}
+
+Construya los correspondientes agentes de aprendizaje y seleccione al menos dos entornos de Gymnasium (\url{https://gymnasium.farama.org/}) donde uno de ellos \key{ponga de manifiesto la necesidad} de usar métodos aproximados (p.e. un entorno continuo).
+
+
+\begin{importantbox}
+Use la representación gráfica o tabla de valores que considere más conveniente para mostrar el aprendizaje de los agentes. Intente usar representaciones o tablas acordes al tipo de aprendizaje.
+\end{importantbox}
+
+
+Notar que no se le pide ningún algoritmo Actor-Crítico.
+
+
+\subsubsection*{Pero ¿qué entornos  pueden ser utilizados para la experimentación?}
+
+
+
+\begin{itemize}
+\item Los entornos de Gymnasium (\url{https://gymnasium.farama.org/environments/classic_control/}). Ya sea Classic Control, Box2D, Toy Text, MuJoCo o Atari.
+\item Los entornos externos de Gymanasium como:
+	\begin{itemize}
+	\item Bluesky. \url{https://github.com/TUDelft-CNS-ATM/bluesky-gym/blob/main/bluesky_gym/envs/README.md}
+.	\item Flappy-bird:	
+		\begin{itemize}
+		\item \url{https://github.com/robertoschiavone/flappy-bird-env}
+		\item \url{https://github.com/markub3327/flappy-bird-gymnasium}
+		\end{itemize}
+	\item PyFlyt. \url{https://taijunjet.com/PyFlyt/index.html}
+	\item Tetris. \url{https://github.com/Max-We/Tetris-Gymnasium}
+	\item Sokoban. \url{https://github.com/mpSchrader/gym-sokoban}
+	\item Simplegrid \url{https://github.com/damat-le/gym-simplegrid}
+	\end{itemize}
+	
+\item \key{Cualquier otro} que se considere, siempre y cuando su \textbf{ejecución} en Colab sea \textbf{inmediata}. 
+
+\end{itemize}
+
+\begin{importantbox}
+Los entornos de experimentación no pueden requerir que el docente tenga que estar realizando una instalación manual de software. Todo debe ser reproducible con un simple click en Colab y que responda al esquema general de Gymnasium.
+\end{importantbox}
+
+
+\begin{alertbox}
+En Internet existen multitud de notebooks, repositorios y blogs donde se implementan experimentos de RL en entornos como Gymnasium (o versiones similares), utilizando exactamente los mismos algoritmos que se piden. 
+Debéis tener \textbf{muchísimo cuidado} con reproducir estructuras experimentales, configuraciones, entornos o resultados que sean \textbf{sospechosamente similares} a lo que pueden encontrarse fácilmente en la red.
+
+Esto no se refiere solo a copiar código (que siempre será muy similar). Se refiere a usar también los mismos entornos con los mismos parámetros, con los mismo algoritmos, con los mismos patrones visuales, con réplica de los resultados numéricos, con idénticos diseños experimentales, con las mismas conclusiones, con los mismos estudios futuros, etc ...
+
+La práctica no busca reproducir un experimento estándar de internet. \textbf{Buscad  vuestro propio estudio experimental, con criterio y justificación.}
+
+Una experimentación demasiado parecida a ejemplos públicos puede considerarse falta grave de originalidad académica, incluso  podríamos estar rozando el plagio (aunque todo no sea literalmente copiado).
+
+La originalidad metodológica forma parte de la evaluación. \textbf{Tomad este aviso en serio} y recordad que hoy en día los buscadores de OpenAI o Perplexity son capaces de encontrar fácilmente el origen.
+
+~
+
+P.e. Podéis usar \url{https://gymnasium.farama.org/tutorials/training_agents/} para "{}inspiraros"{} pero totalmente prohibido presentar algo "demasiado"{} similar a los estudios del enlace.
+\end{alertbox}
+
+
+%
+%\subsection{Investigación}
+%
+%\tachar{Se ha suprimido toda esta sección. No se repite el contenido suprimido}
+%
+%A continuación se presentan varias líneas de trabajo. Tienen que seleccionar una; pero tengan en cuenta que algunas de ellas les puede costar más trabajo si aún no hemos dado sus correspondiente fundamentos teóricos.
+%
+%El trabajo elegido será el que tengan que exponer al resto de compañero. Se trata de considerar alguna(s) técnica(s) novedosa(s) y presenta un estudio sobre ella(s) y, a ser posible, compararla(s) con las desarrolladas en alguna de las prácticas. Por ejemplo si eligiese realizar un trabajo sobre el problema del bandido de k-brazos podría presentar los algoritmos LinUCB y $\epsilon$-Greedy para Bandidos Contextuales y comparalos con el algoritmo UCB1.
+%
+%Las propuestas de investigación son las siguientes.
+%
+%
+%
+%\subsubsection*{- Bandidos Duelistas}
+%
+%Los \textit{bandidos duelistas} son una extensión del problema clásico de los \textit{bandidos multi-brazo}. En lugar de recibir una recompensa numérica fija por cada acción, el agente selecciona dos acciones y obtiene información en forma de comparación (\textit{duelo}) sobre cuál es mejor. Este enfoque es particularmente útil en escenarios donde las recompensas absolutas no están disponibles o son difíciles de definir.
+%El enfoque intuitivo es que los humanos rara vez asignan una puntuación exacta a una opción, pero sí pueden decir cuál prefieren entre dos alternativas. El modelo de bandidos duelistas se asemeja más a cómo tomamos decisiones en la vida cotidiana.
+%
+%Encontramos una aplicación en sistemas de  recomendación (como Netflix o Spotify), es difícil cuantificar la satisfacción del usuario con una única métrica. Comparar dos recomendaciones en términos de preferencia relativa es una solución más efectiva. También tiene aplicación en motores de búsqueda, donde los algoritmos pueden evaluar qué combinación de resultados ofrece una mejor experiencia al usuario sin depender de una métrica fija como los clics. Esto mismo lo habrá podido comprobar en ChatGPT que, de vez en cuando, le ofrece dos posibles respuestas y le pide que seleccione una de ellas.
+%
+%
+%
+%\subsubsection*{- Bandidos Adversarios}
+%
+%{\it "\/Un bandido estocástico con \( K \) acciones está completamente determinado por las distribuciones de recompensas, \( P_1, \dots, P_K \), de las respectivas acciones. En particular, en la ronda \( t \), la distribución de la recompensa \( X_t \) recibida por un aprendiz que elige la acción \( A_t \in [K] \) es \( P_{A_t} \), independientemente de las recompensas y acciones pasadas.  
+%Si se observa detenidamente cualquier problema del “mundo real”, ya sea el diseño de medicamentos, la recomendación de artículos en la web o cualquier otro, pronto descubriremos que en realidad no existen distribuciones adecuadas.  
+%En primer lugar, será difícil argumentar que la recompensa se genera realmente de manera aleatoria y, aun si fuera generada aleatoriamente, las recompensas podrían estar correlacionadas en el tiempo. Tener en cuenta todos estos efectos haría que un modelo estocástico sea potencialmente bastante complicado.  
+%Una alternativa es adoptar un enfoque pragmático, en el que casi nada se asuma sobre el mecanismo que genera las recompensas, pero manteniendo el objetivo de competir con la mejor acción en retrospectiva. Esto nos lleva al llamado \textbf{modelo de bandido adversarial}"\/ {\url{https://banditalgs.com/2016/10/01/adversarial-bandits/}}}. 
+%
+%El problema del \textit{bandido adversarial} es una variante del problema del bandido multibrazo en la que las recompensas asociadas a cada acción pueden ser determinadas por un adversario, en lugar de seguir una distribución fija y desconocida. Este enfoque es relevante en escenarios donde las recompensas pueden cambiar de manera adversa o estratégica
+%
+%
+%
+%
+%
+%\subsubsection*{- Bandidos Contextuales}
+%
+%{\it En la mayoría de los problemas de bandidos, es probable que haya alguna información adicional disponible al comienzo de las rondas y, a menudo, esta información puede ayudar potencialmente con las opciones de acción. Por ejemplo, en un sistema de recomendación de artículos web, donde el objetivo es mantener a los visitantes interesados en el sitio web, la información contextual sobre el visitante del sitio web, la hora del día, información sobre lo que está de moda, etc., probablemente puede mejorar la elección del artículo que se colocará en la "portada". Por ejemplo, es más probable que un artículo orientado a la ciencia capte la atención de un fanático de la ciencia, y es posible que a un fanático del béisbol le importe poco el fútbol europeo.
+%
+%Si utilizáramos un algoritmo estándar de búsqueda de artículos (como UCB), el enfoque único que adoptan estos algoritmos, que solo buscan encontrar el artículo más atractivo, probablemente decepcionará a una parte innecesariamente grande de los visitantes del sitio. En situaciones como esta, dado que el parámetro de referencia que los algoritmos de búsqueda de artículos buscan alcanzar funciona mal al omitir la información disponible, es mejor cambiar el problema y redefinir el parámetro de referencia. Sin embargo, es importante darse cuenta de que aquí hay una dificultad inherente. \url{https://banditalgs.com/2016/10/14/exp4/}}
+%
+%El problema del \textit{bandido contextual} es una extensión del problema del bandido multibrazo que incorpora información contextual en el proceso de toma de decisiones. En cada ronda, el agente observa un contexto y debe seleccionar una acción (o brazo) basándose en este contexto, con el objetivo de maximizar la recompensa acumulada a lo largo del tiempo. Este enfoque es especialmente relevante en aplicaciones como sistemas de recomendación, publicidad en línea y personalización de contenido.
+%
+%
+%
+%
+%\subsubsection*{- Planificación.} 
+%
+%En la práctica no tenemos ningún modelo del entorno y el agente debe aprender directamente de la experiencia, interactuando con el entorno. Esto da lugar a algoritmos como Q-Learning, SARSA, etc ... Pero podríamos usar la experiencia para construir un modelo. Si cada vez que se da un paso almaceno la  muestra $(S_t, A_t, R_{t+1}, S_{t+1})$ podré tener estimaciones de $p(s', r| s, a)$. Entonces tendría lotes de muestras que podría utilizar una y otra vez para hacer estimaciones de los valores de los estados y las acciones. A esto se le llama planificación. Está comprobado que la planificación mejora cualquier método (de hecho se usa en DQLearning). Hay varias formas de hacerlo ?`en cuanto mejora la planificación la resolución de las tareas en los entornos que has seleccionado en la segunda práctica?
+%
+%
+%
+%\subsection*{- TD($\lambda$)}
+%
+%El algoritmo TD($\lambda$) es una técnica de \textit{Aprendizaje por Refuerzo} que combina los métodos de \textit{Diferencia Temporal} (TD) y \textit{Monte Carlo}, utilizando un parámetro de trazas de elegibilidad, $\lambda$, para equilibrar entre ambos enfoques. Fue introducido por Richard S. Sutton en 1988 y se ha convertido en una herramienta fundamental en el aprendizaje automático.
+%
+%La actualización del valor de un estado \( s_t \) en TD($\lambda$) se define como:
+%$
+%V(s_t) \leftarrow V(s_t) + \alpha \delta_t e_t
+%$
+%donde 
+%
+%\begin{itemize}
+%\item \( \alpha \) es la tasa de aprendizaje,
+%\item  \( \delta_t \) es el error de TD, calculado como:
+%$
+%  \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)
+%$
+%
+%\item \( e_t \) es la traza de elegibilidad, que se actualiza según:
+%$
+%  e_t = \gamma \lambda e_{t-1} + 1
+%$
+%
+%\end{itemize}
+%
+%Aquí, \( \gamma \) es el factor de descuento y \( \lambda \) es el parámetro que controla la longitud de las trazas de elegibilidad.
+%
+%
+%TD($\lambda$) es un método de aproximación porque no calcula los valores exactos de los estados, sino que estima la función de valor utilizando las trazas de elegibilidad para interpolar entre los métodos TD(0) y Monte Carlo. Ajustando el parámetro \( \lambda \), se puede controlar el equilibrio entre sesgo y varianza en las estimaciones.
+%
+%
+%
+%
+%
+%
+%\subsection*{- Q($\lambda$)}
+%
+%El algoritmo Q($\lambda$) es una extensión del Q-learning que introduce el concepto de trazas de elegibilidad mediante el parámetro \( \lambda \). Este mecanismo permite que el aprendizaje no solo dependa de la recompensa inmediata, sino también de múltiples pasos anteriores. 
+%
+%El parámetro \( \lambda \) regula la contribución de estos pasos anteriores:
+%\begin{itemize}
+%    \item \( \lambda = 0 \) → Se reduce a Q-learning tradicional (actualización basada solo en la recompensa inmediata).
+%    \item \( \lambda = 1 \) → Se comporta como Monte Carlo (utiliza la recompensa total del episodio).
+%    \item \( 0 < \lambda < 1 \) → Realiza una interpolación entre ambos enfoques.
+%\end{itemize}
+%
+%Puede requerir algún concepto de TD($\lambda$)
+%
+%
+%
+%
+%\subsection*{- Regiones de Confianza}
+%
+%El objetivo de los métodos que se quieren analizar aquí es mejorar la estabilidad de la actualización de la política durante el entrenamiento. Existe un dilema: por un lado, nos gustaría entrenar lo más rápido posible, realizando grandes pasos durante la actualización mediante descenso de gradiente estocástico (SGD). Por otro lado, una actualización grande de la política generalmente es una mala idea. La política es algo muy no lineal, por lo que una actualización grande podría arruinar la política que acabamos de aprender.
+%
+%La situación puede empeorar aún más en el ámbito del aprendizaje por refuerzo (RL), ya que no se puede recuperar de una mala actualización de la política mediante actualizaciones posteriores. En su lugar, la política incorrecta proporcionará muestras de experiencia deficientes que utilizaremos en pasos de entrenamiento posteriores, lo que podría romper nuestra política por completo. Por lo tanto, queremos evitar realizar actualizaciones grandes a toda costa. Una de las soluciones ingenuas sería utilizar una tasa de aprendizaje pequeña para dar pasos muy reducidos durante el SGD, pero esto ralentizaría significativamente la convergencia.
+%
+%Para romper este círculo vicioso, varios investigadores han intentado estimar el efecto que tendrá nuestra actualización de la política en términos de resultados futuros. Constituyen  los  métodos de regiones de confianza (Trust Region Methods) en el aprendizaje por refuerzo.  Son técnicas que se utilizan para garantizar que las actualizaciones de la política sean estables y no se produzcan cambios demasiado drásticos de una iteración a la siguiente. La idea central es limitar el “tamaño” del cambio de la política en cada actualización, de modo que la nueva política se mantenga lo suficientemente cercana a la anterior para no deteriorar el rendimiento aprendido.
+%
+%
+%TRPO (Trust Region Policy Optimization) es un algoritmo de actor-crítico. En los algoritmos de actor-crítico, la arquitectura consta de dos componentes principales:
+%
+%\begin{itemize}
+%\item Actor: Se encarga de generar la política, es decir, determina las acciones a tomar dado un estado.
+%\item Crítico: Evalúa la política generada por el actor calculando la función de valor (generalmente el valor de la acción o el valor del estado).
+%\end{itemize}
+%
+%En TRPO, el actor es una red neuronal que aprende la política, mientras que el crítico estima la función de valor de la política. A lo largo del proceso de optimización, el actor y el crítico se actualizan conjuntamente.
+%
+%Lo que distingue a TRPO de otros algoritmos actor-crítico es que utiliza una optimización basada en la \textit{región de confianza}, lo que permite que los cambios en la política sean más estables y controlados, evitando actualizaciones demasiado grandes que puedan llevar a una degradación del rendimiento.
+%
+%
+%
+%
+%
+%
+%
+%\subsection*{- Más Actores Críticos}
+%
+%
+%Las técnicas de actor-crítico combinan dos componentes principales: el \emph{actor}, que se encarga de seleccionar las acciones (política), y el \emph{crítico}, que evalúa la calidad de las acciones o estados (función de valor). Existen numerosas variantes y mejoras en estos métodos. 
+%Cada uno de estos enfoques tiene sus propias ventajas y desafíos, y la elección del método adecuado puede depender de la naturaleza del problema, el tipo de espacio de acción (discreto o continuo) y las características específicas del entorno en el que se aplica. 
+%Cuando el espacio es continuo surgen nuevos retos. 
+%
+%
+%DDPG (Deep Deterministic Policy Gradient) es un algoritmo de aprendizaje por refuerzo diseñado para resolver problemas con espacios de acción continuos, algo que otros algoritmos como DQN no pueden manejar directamente debido a que trabajan en espacios de acción discretos.
+%DDPG se basa en el enfoque de gradientes de política determinista y utiliza dos redes neuronales una para el actor y otra para el crítico. Es una técnica off-policy.
+%
+%Aunque DDPG puede lograr un gran rendimiento en algunas ocasiones, con frecuencia es sensible a los hiperparámetros y otros tipos de ajustes. Un modo común de falla en DDPG es que la función Q aprendida comienza a sobrestimar drásticamente los valores de Q, lo que lleva a que la política se rompa, ya que explota los errores en la función Q. Twin Delayed DDPG (TD3) es un algoritmo que aborda este problema mediante presenta un rendimiento sustancialmente mejorado en comparación con el DDPG base.  Por algunos es considerado como casi insuperable (pero será cuestión de tiempo).
+%
+%Puede desarrollar cualquiera de estos dos algoritmos (basta con uno).
+%
+%
+%
+%
+%
+%
+%\subsubsection*{- Otros trabajos por iniciativa propia}
+%
+%
+%
+%Alternativamente puede desarrollar un trabajo más aplicado. Por ejemplo, el uso del aprendizaje por refuerzo en el mundo de la robótica, videojuegos, etc ...
+%Si le interesa trabajar sobre esta otra línea, diferente a las anteriores, remita al profesor la siguiente información: objetivo del trabajo, referencias documentales, librerías a utilizar y encaje y \textit{dificultad} con el resto de los contenidos de la asignatura.
+%
+%
+%Otra alternativa, bastante menos investigadora, es la \textbf{construcción de una librería con todos los algoritmos} vistos en clase resolviendo algún entorno que pueda localizarse a partir de la web de Gymansium.
+%
+%La cantidad de trabajos sobre este tema es inabordable y requeriría una gran cantidad de tiempo para ponerse al día. OpenAI propone 105 artículos clave para este tema del aprendizaje por refuerzo publicados antes de 2019: \url{https://spinningup.openai.com/en/latest/spinningup/keypapers.html}.  Si lo prefiere, también puede intentar reproducir algunos de los resultados que aparecen en esos artículos.
+%
+%
+%Hasta que no tenga el visto bueno para su realización, mejor no empiece. Su propuesta puede quedar rechazada.
+%
+%
+%\begin{importantbox}
+%Recuerde que el objetivo es solo hacer \underline{\textbf{un}} estudio de investigación. Solo debe estudiar uno o dos algoritmos de los que puede encontrar en la literatura y profundizar un poco en ellos. No se trata de que los estudie todos y decida por uno. Al contrario, decida uno y estúdielo (olvidando el resto de propuestas).
+%\end{importantbox}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%\section{Referencias para la Investigación}
+%
+%A continuación se dan algunas citas bibliográficas de apoyo para la parte de investigación.
+%
+%
+%\subsection*{Bandidos Duelistas}
+%\begin{enumerate}
+%
+%\item  Yue, Y., \& Joachims, T. (2009). \textit{Beat the mean bandit}. En \textbf{Proceedings of the 26th International Conference on Machine Learning (ICML)}. \url{https://www.cs.cornell.edu/people/tj/publications/yue_joachims_11a.pdf} 
+%{Este trabajo introduce el problema del bandido duelista y propone algoritmos para abordarlo.}
+%
+%
+%\item  Zoghi, M., Whiteson, S., Munos, R., \& de Rijke, M. (2014). \textit{Relative upper confidence bound for the K-armed dueling bandit problem}. En \textbf{Proceedings of the 31st International Conference on Machine Learning (ICML)}. \url{https://proceedings.mlr.press/v32/zoghi14.html} 
+%{Los autores proponen el algoritmo Relative Upper Confidence Bound (RUCB) para el problema del bandido duelista con \( K \) opciones.}
+%
+%\item  Lekang, T., \& Lamperski, A. (2019). \textit{Simple Algorithms for Dueling Bandits}. En \textbf{arXiv preprint arXiv:1906.07611}. \url{https://arxiv.org/abs/1906.07611} {  
+%   Este artículo presenta algoritmos simples para el problema del bandido duelista, con análisis de sus límites de regret y comparaciones con algoritmos existentes.
+%}
+%\item  González González, M. (2020). \textit{Aprendizaje por refuerzo mediante bandidos duelistas}. Trabajo de Fin de Grado, Universidad de Sevilla. \url{https://miguelgg.com/assets/pdf//publications/TFGInfo.pdf}{  
+%   Este trabajo ofrece una visión detallada del problema de los bandidos duelistas y analiza diversos algoritmos, incluyendo aquellos de fácil implementación.
+%}
+%
+%\end{enumerate}
+%
+%
+%
+%\subsection*{Bandidos Adversarios}
+%
+%\begin{enumerate}
+%\item  Auer, P., Cesa-Bianchi, N., Freund, Y., \& Schapire, R. E. (2002). \textit{The nonstochastic multi-armed bandit problem}. \textbf{SIAM Journal on Computing, 32}(1), 48-77.  
+%   Disponible en: \url{https://doi.org/10.1137/S0097539701398375}  Dispone de una versión libre en \url{https://cseweb.ucsd.edu/~yfreund/papers/bandits.pdf}
+%   Este artículo introduce el algoritmo EXP3, diseñado para entornos adversariales en el problema del bandido multibrazo, y proporciona análisis teóricos sobre su rendimiento.
+%   
+%   
+%\item  Lattimore, T., \& Szepesvári, C. (2020). Bandit Algorithms. Cambridge University Press.  \url{
+%https://doi.org/10.1017/9781108571401}. 
+%   Disponible una versión libre en \url{https://tor-lattimore.com/downloads/book/book.pdf}  
+%   Este libro estudia en la tercera parte el algoritmo EXP3   
+%
+%
+%
+%\item Bubeck, S., \& Cesa-Bianchi, N. (2012). \textit{Regret analysis of stochastic and nonstochastic multi-armed bandit problems}. \textbf{Foundations and Trends in Machine Learning, 5}(1), 1-122.  
+%   Disponible en: \url{https://doi.org/10.1561/2200000024} y también en \url{http://sbubeck.com/SurveyBCB12.pdf} 
+%   Este trabajo ofrece una revisión exhaustiva de los análisis de regret en problemas de bandidos tanto estocásticos como adversariales, incluyendo algoritmos clave y sus propiedades.
+%
+%
+%\item Seldin, Y., \& Slivkins, A. (2014). \textit{One practical algorithm for both stochastic and adversarial bandits}. En \textbf{Proceedings of the 31st International Conference on Machine Learning (ICML)}.  
+%   Disponible en: \url{https://proceedings.mlr.press/v32/seldin14.html}  
+%   Los autores presentan un algoritmo práctico que es efectivo tanto en entornos estocásticos como adversales, adaptándose dinámicamente a la naturaleza del entorno.
+%
+%
+%\end{enumerate}
+%
+%
+%
+%\subsection*{Bandidos Contextuales}
+%
+%\begin{enumerate}
+%
+%\item  Lattimore, T., \& Szepesvári, C. (2020). Bandit Algorithms. Cambridge University Press.  \url{
+%https://doi.org/10.1017/9781108571401}. 
+%   Disponible una versión libre en \url{https://tor-lattimore.com/downloads/book/book.pdf}  
+%   Este libro estudia en la quinta parte el algoritmo EXP4   
+%   
+%
+%\item Bubeck, S., \& Cesa-Bianchi, N. (2012). \textit{Regret analysis of stochastic and nonstochastic multi-armed bandit problems}. \textbf{Foundations and Trends in Machine Learning, 5}(1), 1-122.  
+%   Disponible en: \url{https://doi.org/10.1561/2200000024} y también en \url{http://sbubeck.com/SurveyBCB12.pdf} 
+%   Este trabajo ofrece una revisión exhaustiva de los análisis de regret en problemas de bandidos tanto estocásticos como contextuales, incluyendo algoritmos clave y sus propiedades.
+%
+%
+%
+%\item  Li, L., Chu, W., Langford, J., \& Schapire, R. E. (2010). \textit{A Contextual-Bandit Approach to Personalized News Article Recommendation}. En \textbf{Proceedings of the 19th International Conference on World Wide Web (WWW)}.  
+%   Disponible en: \url{https://doi.org/10.1145/1772690.1772758}  y \url{https://arxiv.org/abs/1003.0146}
+%   Este trabajo presenta un enfoque de bandido contextual para la recomendación personalizada de artículos de noticias, introduciendo el algoritmo \textbf{LinUCB} y demostrando su eficacia en escenarios reales.
+%   
+%   
+%\item Zhou, L. (2015). \textit{A Survey on Contextual Multi-armed Bandits}. \textbf{arXiv preprint arXiv:1508.03326}.  
+%   Disponible en: \url{https://arxiv.org/abs/1508.03326}  
+%   Este artículo presenta una revisión exhaustiva de los algoritmos de bandidos contextuales, abordando tanto enfoques estocásticos como adversariales, y proporcionando un análisis detallado sobre sus límites de arrepentimiento y suposiciones.
+%
+%
+%\item  Chu, W., Li, L., Reyzin, L., \& Schapire, R. E. (2011). \textit{Contextual Bandits with Linear Payoffs}. En \textbf{Proceedings of the 14th International Conference on Artificial Intelligence and Statistics (AISTATS)}.  
+%   Disponible en: \url{https://proceedings.mlr.press/v15/chu11a.html}  
+%   Este artículo introduce un enfoque basado en límites superiores de confianza (UCB) para bandidos contextuales con recompensas lineales, ofreciendo un equilibrio entre exploración y explotación y facilitando su implementación práctica.
+%
+%
+%
+%\item Agrawal, S., \& Goyal, N. (2013). \textit{Thompson Sampling for Contextual Bandits with Linear Payoffs}. En \textbf{Proceedings of the 30th International Conference on Machine Learning (ICML)}.  
+%   Disponible en: \url{https://proceedings.mlr.press/v28/agrawal13.html}  
+%   Los autores analizan el uso de Thompson Sampling en el contexto de bandidos con recompensas lineales, proporcionando garantías teóricas sobre su rendimiento y comparándolo con otros algoritmos.
+%   
+%\end{enumerate}
+%
+%
+%\subsection*{Planificación}
+%
+%\begin{enumerate}
+%% Libro clásico sobre aprendizaje por refuerzo
+%    \item Sutton, R. S., \& Barto, A. G. (2018). \textit{Reinforcement Learning: An Introduction} Cap. 8 (2nd ed.). MIT Press.  
+%    Disponible en: \url{http://incompleteideas.net/book/the-book-2nd.html}  
+%\end{enumerate}
+%  
+%
+%
+%\subsection*{TD($\lambda$)}
+%
+%\begin{enumerate}
+%    % Trabajo fundamental donde se introduce TD($\lambda$)
+%    \item Sutton, R. S. (1988). \textit{Learning to predict by the methods of temporal differences}. Machine Learning, 3(1), 9-44.  
+%    Disponible en: \url{https://link.springer.com/article/10.1007/BF00115009}  
+%    Este es el artículo seminal donde Richard Sutton introduce el método de Diferencia Temporal (TD) y presenta TD($\lambda$) como una interpolación entre métodos TD y Monte Carlo.
+%
+%    % Libro clásico sobre aprendizaje por refuerzo
+%    \item Sutton, R. S., \& Barto, A. G. (2018). \textit{Reinforcement Learning: An Introduction} (2nd ed.). MIT Press.  
+%    Disponible en: \url{http://incompleteideas.net/book/the-book-2nd.html}  
+%    Este libro es una referencia fundamental sobre aprendizaje por refuerzo. Contiene explicaciones detalladas de TD($\lambda$), trazas de elegibilidad y su aplicación en diferentes problemas de optimización.
+%
+%    % Introducción de True Online TD($\lambda$)
+%    \item Seijen, H. V., \& Sutton, R. S. (2014). \textit{True Online TD($\lambda$)}. En Proceedings of the 31st International Conference on Machine Learning (ICML-14), 692-700.  
+%    Disponible en: \url{http://proceedings.mlr.press/v32/seijen14.pdf}  
+%    Este artículo introduce la versión \textit{True Online TD($\lambda$)}, una mejora sobre TD($\lambda$) que hace que la actualización de valores sea más estable y eficiente en tiempo real.
+%
+%%    % Aplicación de TD($\lambda$) en juegos (Backgammon y TD-Gammon)
+%%    \item Tesauro, G. (1995). \textit{Temporal Difference Learning and TD-Gammon}. Communications of the ACM, 38(3), 58-68.  
+%%    Disponible en: \url{https://dl.acm.org/doi/10.1145/203330.203343}  
+%%    Explica cómo TD($\lambda$) se utilizó en TD-Gammon, un programa de Backgammon que alcanzó nivel experto utilizando aprendizaje por refuerzo.
+%%
+%%    % Convergencia de TD($\lambda$)
+%%    \item Dayan, P. (1992). \textit{The convergence of TD($\lambda$) for general $\lambda$}. Machine Learning, 8(3-4), 341-362.  
+%%    Disponible en: \url{https://link.springer.com/article/10.1023/A:1022632907294}  
+%%    Analiza la convergencia matemática de TD($\lambda$) para diferentes valores de $\lambda$, proporcionando una base teórica para su uso en distintos entornos.
+%
+%% Artículo que introduce True Online TD($\lambda$)
+%    \item van Seijen, H., \& Sutton, R. S. (2014). \textit{True Online TD($\lambda$)}. En \textit{Proceedings of the 31st International Conference on Machine Learning (ICML-14)}, 692-700.  
+%    Disponible en: \url{https://proceedings.mlr.press/v32/seijen14.pdf}  
+%    % Comentario
+%    Este artículo presenta el algoritmo True Online TD($\lambda$), una variante que mejora la correspondencia entre la vista hacia adelante y la implementación en línea de TD($\lambda$), ofreciendo actualizaciones más precisas y estables.
+%
+%    % Artículo que extiende True Online TD($\lambda$) a métodos de control
+%    \item van Seijen, H., Mahmood, A. R., Pilarski, P. M., Machado, M. C., \& Sutton, R. S. (2016). \textit{True Online Temporal-Difference Learning}. \textit{Journal of Machine Learning Research}, 17(145), 1-40.  
+%    Disponible en: \url{https://jmlr.org/papers/volume17/15-599/15-599.pdf}  
+%    % Comentario
+%    En este trabajo, los autores amplían el concepto de True Online TD($\lambda$) a métodos de control, introduciendo True Online Sarsa($\lambda$) y demostrando su eficacia en diversos dominios.
+%
+%\end{enumerate}
+%
+%
+%
+%
+%
+%\subsection*{Q($\lambda$)}
+%
+%\begin{enumerate}
+%    % Tesis original de Q-learning
+%%    \item Watkins, C. J. C. H. (1989). \textit{Learning from Delayed Rewards}. Ph.D. Thesis, University of Cambridge.  
+%%    Disponible en: \url{https://www.cs.rhul.ac.uk/~chrisw/new_thesis.pdf}  
+%%    % Comentario
+%%    Esta tesis doctoral introduce por primera vez el algoritmo Q-learning, estableciendo la base teórica para variantes como Q($\lambda$).
+%
+%    % Introducción de Q($\lambda$) de Peng y Williams
+%    \item Peng, J., \& Williams, R. J. (1996). \textit{Incremental Multi-Step Q-Learning}. En \textbf{Machine Learning, 22}(1-3), 283-290.  
+%    Disponible en: \url{https://link.springer.com/article/10.1007/BF00114731}  
+%    % Comentario
+%    Este artículo introduce una versión de Q-learning con actualizaciones de múltiples pasos, precursora directa del algoritmo Q($\lambda$).
+%
+%    % Libro de Sutton y Barto (referencia clave)
+%    \item Sutton, R. S., \& Barto, A. G. (2018). \textit{Reinforcement Learning: An Introduction} (2nd ed.). MIT Press.  
+%    Disponible en: \url{http://incompleteideas.net/book/the-book-2nd.html}  
+%    % Comentario
+%    Este libro es una referencia fundamental en Aprendizaje por Refuerzo y proporciona una explicación detallada de Q($\lambda$), sus propiedades y su relación con otros algoritmos.
+%
+%%    % Revisión moderna de Q($\lambda$)
+%%    \item Kozuno, T., Tang, Y., Rowland, M., Munos, R., Kapturowski, S., Dabney, W., Valko, M., \& Abel, D. (2021). \textit{Revisiting Peng's Q($\lambda$) for Modern Reinforcement Learning}. \textbf{arXiv preprint arXiv:2103.00107}.  
+%%    Disponible en: \url{https://arxiv.org/abs/2103.00107}  
+%%    % Comentario
+%%    Este artículo revisita la formulación de Peng para Q($\lambda$) y evalúa su desempeño en entornos modernos de Aprendizaje por Refuerzo, proponiendo mejoras prácticas.
+%
+%
+%\item Wiering, M. \& Schmidhub, J. (s.f.). \textit{Fast Online Q($\lambda$)}. IDSIA, Corso Elvezia 36, 6.  \url{http://www.idsia.ch/~juergen/fast_online_q_lambda.pdf} 
+%    Este trabajo presenta una versión "rápida y en línea" del algoritmo Q($\lambda$) para el aprendizaje por refuerzo, permitiendo actualizaciones eficientes en tiempo real. (La fecha de publicación no se encuentra especificada.)
+%
+%
+%
+%    % Aplicación de Q($\lambda$) en Deep Learning y Atari
+%    \item Mousavi, S. S., Schukat, M., \& Howley, E. (2017). \textit{Applying Q($\lambda$)-Learning in Deep Reinforcement Learning to Play Atari Games}. En \textbf{Proceedings of the Adaptive and Learning Agents Workshop (ALA 2017)}.  
+%    Disponible en: \url{https://ala2017.cs.universityofgalway.ie/papers/ALA2017_Mousavi.pdf}  
+%    % Comentario
+%    Este trabajo explora la implementación de Q($\lambda$) en un entorno de Aprendizaje Profundo aplicado a juegos de Atari, mostrando mejoras en la eficiencia del aprendizaje.
+%
+%
+%
+%% Artículo que introduce una nueva versión de Q($\lambda$) con equivalencia Monte Carlo
+%    \item Sutton, R. S., Mahmood, A. R., Precup, D., \& van Hasselt, H. (2014). \textit{A new Q($\lambda$) with interim forward view and Monte Carlo equivalence}. En \textit{Proceedings of the 31st International Conference on Machine Learning (ICML-14)}, 568-576.  
+%    Disponible en: \url{https://proceedings.mlr.press/v32/sutton14.pdf}  
+%    % Comentario
+%    Este artículo presenta una nueva variante de Q($\lambda$) que logra una equivalencia exacta con el enfoque de Monte Carlo, mejorando la precisión y estabilidad en el aprendizaje por refuerzo.
+%
+%    % Artículo que analiza Q($\lambda$) con correcciones off-policy
+%    \item Harutyunyan, A., Bellemare, M. G., Stepleton, T., \& Munos, R. (2016). \textit{Q($\lambda$) with Off-Policy Corrections}.  
+%    Disponible en: \url{https://arxiv.org/abs/1602.04951}  
+%    % Comentario
+%    Los autores proponen y analizan un enfoque alternativo para el aprendizaje temporal-diferencial de múltiples pasos off-policy, introduciendo correcciones que mejoran la convergencia y eficiencia del algoritmo Q($\lambda$).
+%
+%	\item  Wiering, M. \& Schmidhuber, J. (1998). \textit{Fast Online Q($\lambda$)}. \textbf{Machine Learning} Kluwer Academic Publishers, 33, 105--115. (1998)  \url{https://link.springer.com/content/pdf/10.1023/A:1007562800292.pdf} 
+%     Este artículo presenta una versión rápida y en línea del algoritmo Q($\lambda$) para el aprendizaje por refuerzo, permitiendo actualizaciones eficientes en tiempo real.
+%
+%
+%
+%\end{enumerate}
+%
+%
+%
+%
+%
+%\subsection*{Regiones de Confianza}
+%
+%\begin{enumerate}   
+%	\item \url{https://spinningup.openai.com/en/latest/algorithms/trpo.html}
+%
+%  
+%    \item  Schulman, J., Levine, S., Moritz, P., Jordan, M. I., \& Abbeel, P. (2015). \textit{Trust Region Policy Optimization}. En \textbf{Proceedings of the 32nd International Conference on Machine Learning (ICML)}. \url{https://arxiv.org/abs/1502.05477}.  Este artículo introduce TRPO, un algoritmo que mejora la estabilidad de las actualizaciones de la política al restringir la divergencia de Kullback-Leibler (KL) entre la política antigua y la nueva, garantizando pasos de actualización “seguros”.
+%
+%    \item  Schulman, J., Wolski, F., Dhariwal, P., Radford, A., \& Klimov, O. (2017). \textit{Proximal Policy Optimization Algorithms}. 
+%    \url{https://arxiv.org/abs/1707.06347}  PPO simplifica la complejidad computacional de TRPO utilizando un mecanismo de \textit{clipping} en la función objetivo para limitar la magnitud de las actualizaciones de la política, facilitando su implementación sin perder estabilidad.
+%
+%	
+%      \item Schulman, J., Moritz, P., Levine, S., Jordan, M., \& Abbeel, P. (2015). \textit{High-Dimensional Continuous Control Using Generalized Advantage Estimation}. \url{https://arxiv.org/abs/1506.02438} Este artículo introduce GAE (Generalized Advantage Estimation), que mejora la estimación de la ventaja reduciendo la varianza sin incurrir en un sesgo excesivo, facilitando actualizaciones de política más estables.
+%      
+%      \item Schulman, J., Levine, S., Abbeel, P., Jordan, M., \& Moritz, P. (2015). \textit{Trust Region Policy Optimization}. \url{https://arxiv.org/abs/1502.05477}  Aunque este artículo se centra en TRPO, incluye una discusión sobre GAE como parte integral del método para lograr actualizaciones de política confiables en entornos complejos.
+%
+%
+%
+%    \item  Wu, Y., Mansimov, E., Liao, S., Grosse, R., \& Ba, J. (2017). \textit{Scalable Trust-Region Method for Deep Reinforcement Learning Using Kronecker-Factored Approximation}. En \textbf{Proceedings of the 34th International Conference on Machine Learning (ICML)}. 
+%     \url{https://arxiv.org/abs/1708.05144}
+%     ACKTR (Actor-Critic using Kronecker-Factored Trust Region) extiende la idea de las regiones de confianza a redes neuronales profundas, utilizando una aproximación factorizada de Kronecker para estimar la curvatura del espacio de parámetros (matriz de Fisher) y, de esta forma, realizar actualizaciones eficientes y estables en entornos de alta dimensión (redes neuronales profundas).
+%
+%     \item Martens, J., \& Grosse, R. (2015). \textit{Optimizing Neural Networks with Kronecker-Factored Approximation}. \\
+%             \url{https://arxiv.org/abs/1503.05671} 
+%             Aunque no es específico de RL, este trabajo proporciona la base teórica para la aproximación de la curvatura utilizada en ACKTR.
+%
+%
+%
+%
+%    \item Mnih, V., Badia, A. P., Mirza, M., Graves, A., Lillicrap, T., Harley, T., ... \& Kavukcuoglu, K. (2016). \textit{Asynchronous Methods for Deep Reinforcement Learning}. En \textbf{Proceedings of the 33rd International Conference on Machine Learning (ICML)}. 
+%     \url{https://arxiv.org/abs/1602.01783}
+%     El A2C con linea base es una variante sincrónica del método Asynchronous Advantage Actor-Critic (A3C) que sirve como base estable y sencilla para métodos actor-crítico, facilitando la comparación con otros algoritmos porque ofrece un equilibrio adecuado entre exploración y explotación en entornos de acción continua.
+%     
+%     
+%    \item  Haarnoja, T., Zhou, A., Abbeel, P., \& Levine, S. (2018). \textit{Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning}. En \textbf{Proceedings of the 35th International Conference on Machine Learning (ICML)}. 
+%    \textbf{URL:} \url{https://arxiv.org/abs/1801.01290} 
+%     El método SAC (Soft Actor-Critic) no se clasifica (como A2C)  como un método basado en regiones de confianza, aunque SAC comparte con estos métodos el objetivo de lograr estabilidad durante la actualización de la política, lo hace mediante mecanismos diferentes. SAC se basa en un objetivo de entropía máxima que incentiva la exploración y la robustez en la toma de decisiones. La estabilidad en SAC se logra a través de la incorporación de un término de entropía en la función de objetivo, lo que suaviza la política y fomenta actualizaciones más estables. No utiliza restricciones explícitas en la forma de una región de confianza como PPO o TRPO; pero como "comparten el mismo objetivo" son candidatos a ser comparables.
+% 
+%\end{enumerate}    
+%     
+%     
+%     
+%\subsection*{Más Actores Críticos}
+%
+%\begin{enumerate}
+%	\item Algoritmo DDPG: \url{https://spinningup.openai.com/en/latest/algorithms/ddpg.html}
+%	\item Algoritmo TD3: \url{https://spinningup.openai.com/en/latest/algorithms/td3.html}
+%	
+%      \item Mnih, V., Badia, A. P., Mirza, M., Graves, A., Lillicrap, T., Harley, T., \ldots, \& Kavukcuoglu, K. (2016). \textit{Asynchronous Methods for Deep Reinforcement Learning}.   \url{https://arxiv.org/abs/1602.01783}  Este artículo introduce A3C, cuyo modo sincrónico se conoce como A2C, utilizando múltiples agentes para actualizar la política y reducir la varianza en las actualizaciones.
+%      \item Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G., \ldots, \& Hassabis, D. (2015). \textit{Human-level Control through Deep Reinforcement Learning}. \url{https://www.nature.com/articles/nature14236}  Aunque se centra en DQN, este trabajo sienta las bases para los métodos actor-crítico al demostrar la eficacia de las aproximaciones basadas en redes neuronales profundas en RL.
+%
+%
+%      \item Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., ... \& Wierstra, D. (2015). \textit{Continuous Control with Deep Reinforcement Learning}. \url{https://arxiv.org/abs/1509.02971}  Este artículo introduce DDPG, un método off-policy para control continuo que combina un actor determinista con un crítico basado en Q.
+%      \item Henderson, P., Islam, R., Bachman, P., Pineau, J., Precup, D., \& Meger, D. (2017). \textit{Deep Reinforcement Learning That Matters}.  \url{https://arxiv.org/abs/1709.06560}  Este trabajo analiza comparativamente varios algoritmos de RL, incluyendo DDPG, y destaca buenas prácticas y desafíos en su implementación.
+%
+%
+%      \item Fujimoto, S., van Hoof, H., \& Meger, D. (2018). \textit{Addressing Function Approximation Error in Actor-Critic Methods}. \url{https://arxiv.org/abs/1802.09477}  Este artículo introduce TD3, que mejora DDPG mitigando el error de aproximación de funciones mediante el uso de dos críticos y actualizaciones retrasadas del actor.
+%      \item Fujimoto, S., van Hoof, H., \& Meger, D. (2018). \textit{TD3: Twin Delayed Deep Deterministic Policy Gradient}. \url{https://openreview.net/forum?id=rJk00ekbF}  Versión publicada de TD3, que detalla las modificaciones implementadas para mejorar la estabilidad y el rendimiento en tareas de control continuo.
+%
+%
+%      \item Haarnoja, T., Zhou, A., Abbeel, P., \& Levine, S. (2018). \textit{Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning}.  \url{https://arxiv.org/abs/1801.01290}  Este artículo introduce SAC, un método off-policy que utiliza un objetivo de entropía máxima para fomentar la exploración y mejorar la estabilidad en el entrenamiento.
+%      \item Haarnoja, T., Zhou, A., Tang, H., \& Levine, S. (2018). \textit{Soft Actor-Critic Algorithms and Applications}. \url{https://arxiv.org/abs/1812.05905}  Este trabajo extiende SAC y explora diversas aplicaciones, proporcionando una visión más amplia de su desempeño en entornos de control continuo.
+%
+%
+%      \item Wang, Z., Schaul, T., Hessel, M., Hasselt, H. V., Lanctot, M., \& Freitas, N. (2017). \textit{Sample Efficient Actor-Critic with Experience Replay}. \url{https://arxiv.org/abs/1611.01224}  Este artículo introduce ACER, que integra el replay de experiencia en el marco actor-crítico para mejorar la eficiencia muestral y la estabilidad del entrenamiento.
+%      \item Kapturowski, S., Ostrovski, G., Quan, J., Munos, R., \& Dabney, W. (2018). \textit{Recurrent Experience Replay in Distributed Reinforcement Learning}. \url{https://arxiv.org/abs/1803.07240} Este trabajo propone mejoras al replay de experiencia en entornos distribuidos, complementando y extendiendo ideas presentes en ACER.
+%\end{enumerate}
+
+
+
+\newpage
+
+\section{Anexos}
+
+
+
+\subsection{Ejemplo reales de uso del k-bandido}\label{sec:ejem-k-bandidos}
+
+\subsubsection*{Ejemplo de uso una distribución binomial: Optimización de promociones en una app de delivery (tipo Rappi, Uber Eats, DoorDash)}
+
+
+Imagina que trabajas en una app de delivery de comida y tienes k = 4 promociones diferentes que puedes ofrecer a los usuarios cada día (cada promoción es un "brazo"):
+\texttt{Promoción A:} 20\% de descuento en pedidos > 30€; 
+\texttt{Promoción B}: Envío gratis + 5€ de crédito;
+\texttt{Promoción C:} 2x1 en postres;
+\texttt{Promoción D:} Descuento fijo de 8€. 
+
+Cada día la plataforma decide qué promoción ofrecerle a un lote de n = 100 usuarios nuevos que entran por primera vez (o a un segmento específico).
+No se decide usuario por usuario, sino que se asigna una promoción a todo el lote de 100 usuarios de una vez (esto pasa en la práctica por cuestiones operativas, de presupuesto publicitario o de experimentación por lotes).
+La recompensa que obtienes al elegir una promoción (brazo) ese día es:
+número de usuarios (de esos 100) que realmente usaron la promoción (es decir, hicieron un pedido aprovechándola).
+Esto se modela como una distribución Binomial(n=100, $p_i$), donde:
+$n =$ 100 (tamaño fijo del lote de usuarios al que se le muestra la promoción)
+$p_i =$ probabilidad real (desconocida) de que un usuario use esa promoción si se la ofrecemos
+
+El objetivo del bandido es ir aprendiendo qué promoción tiene el $p_i$ más alto (la que convierte más usuarios en compradores) y asignarle más días (más lotes de 100 usuarios) a medida que pasa el tiempo, maximizando el total de pedidos generados.
+
+
+\subsubsection*{Ejemplo de uso de una distribución Bernoulli: Publicidad Online.}
+  
+Supongamos que un anunciante quiere optimizar su campaña de publicidad en línea eligiendo entre \( k = 3 \) diferentes anuncios. Cada anuncio tiene una probabilidad desconocida de que un usuario haga clic en él (\textbf{CTR - Click-Through Rate}). \( A_1 \) tiene un CTR desconocido de \( p_1 \), \( A_2 \) tiene un CTR desconocido de \( p_2 \) y \( A_3 \) tiene un CTR desconocido de \( p_3 \).
+
+El anunciante usa un \textbf{modelo de bandido de \( k \)-brazos}, donde cada vez que muestra un anuncio (elige un brazo), observa si el usuario hizo clic (éxito = 1) o no (fracaso = 0).
+
+El objetivo del bandido es explotar el anuncio que tiene mayor $p_j$.
+
+
+\subsubsection*{Ejemplo de uso de una distribución Normal: Personalización de recomendaciones.}
+
+La personalización de recomendaciones en plataformas de streaming o redes sociales (como YouTube, Spotify, TikTok o Netflix), las recompensas se modelan con distribuciones normales porque el "éxito" no es un simple sí/no (como en Bernoulli) ni un conteo fijo de éxitos (como en Binomial), sino una métrica continua y variable que representa el nivel de interacción del usuario. 
+
+Imagina que eres un ingeniero de machine learning en YouTube. La plataforma tiene $k = 5$ algoritmos de recomendación diferentes (cada uno es un "brazo" del bandido). Estos algoritmos podrían ser variantes de un sistema de ranking de videos:
+\texttt{Brazo 1:} Recomendaciones basadas en historial de vistas recientes (enfoque en similitud de contenido).
+\texttt{Brazo 2:} Recomendaciones exploratorias (mezcla de trending topics con algo de aleatoriedad).
+\texttt{Brazo 3:} Recomendaciones optimizadas para retención larga (prioriza videos largos que el usuario ve completos).
+\texttt{Brazo 4:} Recomendaciones basadas en engagement social (videos con muchos likes/comentarios de tus suscripciones).
+
+Cada vez que un usuario abre la app o refresca la página principal, el sistema debe elegir cuál de estos 4 algoritmos usar para generar la lista de recomendaciones para ese usuario (o para un pequeño grupo de usuarios similares en un experimento A/B adaptativo). Esto se hace en tiempo real, miles de veces por segundo.
+Después de mostrar las recomendaciones, mides \textbf{el tiempo total} de visualización (watch time) generado por esa sesión. Por ejemplo: Si el usuario ve 3 videos recomendados durante 15 minutos en total, recompensa = 15 minutos; pero si solo ve 30 segundos y cierra la app, recompensa = 0.5 minutos; etc Incluso algunas recompensas podrían ser negativas.
+
+Aquí tenemos una distribución continua, y no discreta, porque el watch time varía suavemente (de 0 a horas), dependiendo de factores como el interés del usuario, la calidad del video, interrupciones externas, etc. Por lo tanto, se rige por una distribución continua como, p.e., una distribución normal. 
+
+Experimentalmente se sabe que dependiendo de la distribución considerada algunas técnicas funcionan mejor que otras, destacando algoritmos como UCB o Thompson Sampling.
+
+
+
+
+\subsection{Uso básico de Gymnasium} \label{sec:gymnasium}
+
+
+
+Gymnasium (\url{https://gymnasium.farama.org/}) es un entorno que permite ensayar con distintos algoritmos de aprendizaje por refuerzo. Se muestra a continuación algunos de trozos de código básicos.
+
+
+\subsubsection*{Generar un episodio}
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+import gymnasium as gym
+env = gym.make('nombreEntorno')
+
+obs, info = env.reset() # Genera un estado inicial
+
+done = False
+while not done:  # Genera muestras hasta generar el episodio
+	action = env.action_space.sample()   # Selecciona una acción aleatoria
+	next_obs, reward, terminated, truncated, info = env.step(action) # Ejecuta la acción
+	done = terminated or truncated # Determina si se terminó.
+	obs = next_obs  # Pasa al siguiente estado
+\end{pyverbatim}
+
+\subsubsection*{Esquema general de un agente}
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+class Agent:
+    def __init__(self, env:gym.Env, hiperparámetros):
+       """Inicializa todo lo necesario para el aprendizaje"""
+       
+       
+    def get_action(self, state) -> Any:
+        """
+        Indicará qué acción realizar de acuerdo al estado.
+        Responde a la política del agente.
+        Construir tantas funciones de este tipo como políticas se quieran usar.
+        """
+        
+    def update(self, obs, action, next_obs, reward, terminated, truncated, info):
+        """
+        Con la muestra (s, a, s', r) e información complementaria aplicamos el algoritmo.
+        update() no es más que el algoritmo de aprendizaje del agente.
+        Se añadirá lo necesario para obtener resultados estadísticos, evolución, etc ...
+        """      
+\end{pyverbatim} 
+
+
+
+
+\subsubsection*{Esquema general del aprendizaje episódico de un agente}
+
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+import gymnasium as gym
+from agents import AgentMonteCarlo
+
+env = gym.make('nombreEntorno')
+
+agent = AgentMonteCarloOnPolicy(env) # Si queremos usa MC
+
+for episode in tqdm(range(n_episodes)):
+    obs, info = env.reset()
+    done = False
+
+    # play one episode
+    while not done:
+        action = agent.get_action(obs)
+        next_obs, reward, terminated, truncated, info = env.step(action)
+
+        # update the agent
+        agent.update(self, obs, action, next_obs, reward, terminated, truncated, info)
+
+        # update if the environment is done and the current obs
+        done = terminated or truncated
+        obs = next_obs
+        
+stats = agent.stats()  # Retorna los resultados estadísticos, evolución, etc ...
+
+# Mostrar las estadísticas
+\end{pyverbatim} 
+
+
+
+\subsubsection*{Espacios}
+
+Todo entorno tiene un espacio de acciones (acciones válidas) y un espacio de estados (observaciones válidas). 
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+print(env.action_space, env.observation_space)
+\end{pyverbatim}
+Todos los espacios heredan de la superclase \texttt{Space}. Hay varios tipos de espacios (\url{https://gymnasium.farama.org/api/spaces/}). Destacamos:
+\begin{itemize}
+\item \texttt{Discrete}: representa un conjunto de elementos mutuamente excluyentes, numerados de 0 a \( n-1 \). \pyv{env.action_space.n} retorna un entero con el número de elementos del espacio. Por ejemplo, \pyv{Discrete(n=4)} puede usarse para un espacio de acción de cuatro direcciones para moverse [izquierda, derecha, arriba o abajo].
+
+\item \texttt{Box}: representa un tensor de \( n \) dimensiones de números racionales con intervalos \([low, high]\). Por ejemplo, un pedal acelerador con un solo valor entre 0.0 y 1.0 podría codificarse como
+ 
+\pyv{Box(low=0.0, high=1.0, shape=(1,), dtype=np.float32)} (el argumento \texttt{shape} es una tupla de longitud 1 con un solo valor de 1, lo que nos da un tensor unidimensional con un solo valor).  Otro ejemplo de \texttt{Box} podría ser una observación de pantalla de Atari que es una imagen RGB de tamaño $210\times 160$: \texttt{Box(low=0, high=255, shape=(210, 160, 3), dtype=np.uint8)}. En este caso, el argumento \texttt{shape} es una tupla de tres elementos: la primera dimensión es la altura de la imagen, la segunda es el ancho y la tercera es igual a 3, que corresponden a los tres planos de color para rojo, verde y azul, respectivamente. Entonces, en total, cada observación es un tensor 3D con 100,800 bytes.
+
+\item \texttt{Tuple}: nos permite combinar varias instancias de la clase \texttt{Space}. Esto nos permite crear espacios de acción y observación de cualquier complejidad que deseemos. Por ejemplo, imagina que queremos crear una especificación de espacio de acción para un automóvil. El automóvil tiene varios controles que podrían cambiarse en cada instante, incluyendo el ángulo del volante, la posición del pedal del freno y la posición del pedal del acelerador. Estos tres controles podrían especificarse mediante tres valores flotantes en una sola instancia de \texttt{Box}. Además de estos controles esenciales, el automóvil tiene controles discretos adicionales, como una señal de giro (que podría ser "\/apagada", "derecha"\/ o "\/izquierda"), bocina ("\/encendida"\/ o "\/apagada"), entre otros. Para combinar todo esto en una sola clase de especificación de espacio de acción, podemos crear {\footnotesize \pyv{Tuple(spaces=(Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32), Discrete(n=3), Discrete(n=2)))}}. 
+\end{itemize}
+
+Hay más tipos de espacios. Consulte \url{https://gymnasium.farama.org/api/spaces/#fundamental-spaces}
+
+
+
+\subsubsection*{Wrapper}
+
+
+En ocasiones se quiere extender la funcionalidad del entorno de alguna manera genérica. Por ejemplo, un entorno te proporciona algunas observaciones, pero deseas acumularlas en algún buffer y proporcionar al agente las últimas \( N \) observaciones. 
+
+Hay muchas  situaciones de este tipo: te gustaría "\/envolver" el entorno existente y añadir alguna lógica extra que haga algo más. Gymnasium  proporciona un marco general para estas situaciones con la clase \texttt{Wrapper}.
+
+La clase \texttt{Wrapper} hereda de la clase \texttt{Env}. Su constructor acepta un solo argumento: la instancia de la clase \texttt{Env} que se va a "\/envolver". Para añadir funcionalidad extra, necesitas redefinir los métodos que deseas extender, como \texttt{step()} o \texttt{reset()}. \textbf{El único requisito es llamar al método original de la superclase}.
+
+
+Gymnasium  proporciona muchas subclases de la clase \texttt{Wrapper} (\url{https://gymnasium.farama.org/api/wrappers/table/}). Comentamos algunas que permiten filtrar solo una parte específica de la información.
+
+
+\begin{itemize}
+    \item \texttt{ObservationWrapper}: Necesitas redefinir el método \texttt{observation(obs)} de la clase padre. El argumento \texttt{obs} es una observación del entorno envuelto, y este método debe devolver la observación que se le dará al agente.
+
+    \item \texttt{RewardWrapper}: Esta supone modificar el método \texttt{reward(rew)}, que podría modificar el valor de la recompensa dada al agente.
+
+    \item \texttt{ActionWrapper}: Necesitas sobreescribir el método \texttt{action(act)}, que podría ajustar la acción pasada al entorno envuelto para el agente.
+\end{itemize}
+
+Para hacerlo un poco más práctico, imaginemos una situación en la que quiere aplicar una política $\epsilon$-greedy, entonces una forma de hacerlo es:
+
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+class RandomActionWrapper(ActionWrapper):
+    def __init__(self, env, epsilon=0.1):
+        super().__init__(env)
+        self.epsilon = epsilon
+        
+	def action(self, action):
+		if random.random() < self.epsilon:
+            return self.env.action_space.sample()
+        return action
+        
+if __name__ == "__main__":
+    env = RandomActionWrapper(gym.make("CartPole-v0"))
+\end{pyverbatim} 
+
+Notar que en este ejemplo se delega la política del agente en el entorno. Es decir, estamos modificando el comportamiento del entorno con este Wrapper. Se aconseja que las políticas se incluyan mejor en el agente.
+
+Hay un Wrapper que permite grabar vídeos de los episodios que se generen en el entorno usando el método \texttt{render()}. No se recomienda su uso \textbf{salvo que quiera mostrar} de forma animada \textbf{la política óptima final obtenida después del entrenamiento}. En \url{https://github.com/ldaniel-hm/eml_tabular/blob/main/EjemploGeneracionVideos.ipynb} tiene un ejemplo de como usarlo desde Colab. 
+
+
+
+\subsection{Usar PyTorch para Definir una QNet}
+
+Una forma para definir un Red con  PyTorch es la siguiente
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+import torch
+import torch.nn as nn
+
+# Definición de la Red Neuronal Profunda DQN
+class DQN_Network(nn.Module):
+    """
+    Red neuronal para el algoritmo Deep Q-Network (DQN).
+    Se compone de capas totalmente conectadas (FC) con activaciones ReLU.
+    """
+    
+    def __init__(self, num_actions, input_dim):
+        """
+        Inicializa la red neuronal.
+        
+        Parámetros:
+            num_actions (int): Número total de acciones posibles en el entorno.
+            input_dim (int): Dimensión del espacio de estados de entrada.
+        """
+        
+        super(DQN_Network, self).__init__()
+        
+        # Definición de las capas de la red neuronal
+        self.FC = nn.Sequential(
+            nn.Linear(input_dim, 12),  # Capa de entrada con 12 neuronas
+            nn.ReLU(inplace=True),  # Función de activación ReLU
+            nn.Linear(12, 8),  # Capa oculta con 8 neuronas
+            nn.ReLU(inplace=True),  # Otra activación ReLU
+            nn.Linear(8, num_actions)  # Capa de salida con 'num_actions' neuronas
+        )
+        
+        # Inicialización de pesos usando He initialization (Kaiming Uniform)
+        for layer in [self.FC]:
+            for module in layer:
+                if isinstance(module, nn.Linear):
+                    nn.init.kaiming_uniform_(module.weight, nonlinearity='relu')
+    
+    def forward(self, x):
+        """
+        Propagación hacia adelante de la red para calcular los valores Q.
+        
+        Parámetros:
+            x (torch.Tensor): Estado de entrada representado como tensor.
+        
+        Retorna:
+            Q (torch.Tensor): Valores Q para cada acción posible.
+        """
+        
+        Q = self.FC(x)  # Pasa el estado a través de la red neuronal
+        return Q
+\end{pyverbatim}      
+
+
+\subsection{Una Recomendación para Semillas Fijas}
+
+Una forma que se recomienda para iniciar la tarea siempre con la misma semilla es la siguiente (Ojo, puede que no te funcione del todo):
+
+
+\begin{pyverbatim}[][frame=single, fontsize=\scriptsize]
+import os
+import gc
+import torch
+import numpy as np
+import gymnasium as gym
+
+# Configuración del dispositivo (CPU o GPU)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Usando dispositivo: {device}")
+
+# Liberación de memoria para evitar problemas de consumo en GPU
+gc.collect()  # Ejecuta el recolector de basura de Python
+torch.cuda.empty_cache()  # Vacía la caché de memoria en GPU
+
+# Depuración de errores en CUDA
+ios.environ['CUDA_LAUNCH_BLOCKING'] = '1'  # Muestra errores de CUDA en el punto exacto donde ocurren
+
+# Configuración de la semilla para reproducibilidad
+seed = 2024  # Se define una semilla fija
+
+# Fijar la semilla en NumPy
+np.random.seed(seed)  # Para generar números aleatorios consistentes en NumPy
+np.random.default_rng(seed)  # Establece una instancia del generador de NumPy con la misma semilla
+
+# Fijar la semilla en Python
+ios.environ['PYTHONHASHSEED'] = str(seed)  # Evita variabilidad en hashing de Python
+
+# Fijar la semilla en PyTorch
+torch.manual_seed(seed)  # Asegura resultados reproducibles en operaciones de PyTorch
+
+if torch.cuda.is_available():  # Si hay GPU disponible
+    torch.cuda.manual_seed(seed)  # Fija la semilla para la GPU
+    torch.backends.cudnn.deterministic = True  # Hace las operaciones de CUDNN determinísticas
+    torch.backends.cudnn.benchmark = False  # Desactiva optimizaciones de CUDNN para evitar variabilidad
+
+# Fijar la semilla en Gymnasium
+def make_env(env_name):
+    env = gym.make(env_name)
+    env.reset(seed=seed)  # Establece la semilla en el entorno de Gymnasium
+    return env
+
+# Ejemplo de creación de un entorno con semilla
+env_name = "CartPole-v1"  # Cambiar según el entorno deseado
+env = make_env(env_name)
+
+\end{pyverbatim}
+
+\end{document}
