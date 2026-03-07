@@ -1,1 +1,954 @@
 
+% !TEX root =  plantillaMasterIA.tex
+
+
+\geometry{hmargin=0.5cm}
+
+
+%%%%%%%%%%%%%%%%%%%%
+% Formato de estilo para el Master en IA de la UMU
+%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage[spanish, english]{babel}
+\usepackage[spanish]{babel}
+
+% Traducción al español
+%\uselanguage{spanish}
+%\languagepath{spanish}
+\deftranslation[to=spanish]{Abstract}{Resumen}
+\deftranslation[to=spanish]{Definition}{Definición}
+\deftranslation[to=spanish]{Lemma}{Lema}
+\deftranslation[to=spanish]{Theorem}{Teorema}
+\deftranslation[to=spanish]{Corollary}{Corolario}
+\deftranslation[to=spanish]{Fact}{Observaciones}
+% \deftranslation[to=spanish]{proof}{Demostracion} % No funciona
+\renewenvironment{proof}{\noindent\textbf{Demostración.} }{\ $\Box$}
+%\deftranslation[to=spanish]{Alert}{Ojo} % No funciona
+%\deftranslation[to=spanish]{Alertblock}{Ojo} % No funciona
+\deftranslation[to=spanish]{Exampleblock}{Ojo}
+\deftranslation[to=spanish]{Example}{Ejemplo}
+\deftranslation[to=spanish]{Examples}{Ejemplos}
+\deftranslation[to=spanish]{Exercise}{Ejercicio}
+
+
+
+%Content type		Block			Syntax
+%---------------------------------------------------------------------------
+%Generic/Standard	block			\begin{block}...\end{block}
+%Highlighted Alert	alertblock		\begin{alertblock}...\end{alertblock}
+%Examples 1			exampleblock	\begin{exampleblock} ... \end{block}
+%Theorems			theorem			\begin{theorem} ... \end{theorem}
+%Definition			definition		\begin{definition} ... \end{definition}
+%Proofs				proof			\begin{proof} ... \end{proof}
+%Lemmas				lemma			\begin{lemma} ... \end{lemma}
+%Corollaries		corollary		\begin{corollary} ... \end{corollary}
+%Examples 2			example			\begin{example} ... \end{example}
+
+
+
+
+%% Fuentes
+\usepackage[utf8x]{inputenc}
+\hyphenpenalty=10000 \exhyphenpenalty=10000 \pretolerance=10000 % No rompe palabras
+
+%\usepackage{newtxtext,newtxmath} % txfonts.sty, se divide en dos fuentes
+\usepackage[condensed,math]{iwona}
+
+
+%% Símbolos y entornos matemáticos
+\usepackage{amsmath}
+\usepackage{bm}  % \mb{griega} permite poner símbolos en negrita que ams no puede
+\usepackage{amsfonts}  % fonts from the American Mathematical Society
+\usepackage{mathtools} % Extiende símbolos, más flechas
+\usepackage{blkarray} % Paquete para matrices con etiquetas
+\usepackage{fontawesome5} % https://ctan.fisiquimicamente.com/fonts/fontawesome5/doc/fontawesome5.pdf
+%\usepackage{wasysym}
+% \usepackage{marvosym} % https://texdoc.org/serve/marvodoc.pdf/0
+% https://osl.ugr.es/CTAN/info/symbols/comprehensive/symbols-a4.pdf
+\usepackage{twemojis}
+
+
+%%% Herramientas para tablas
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tabularx} \newcolumntype{Y}{>{\centering\arraybackslash}X} % Para centrar el contenido de las X
+\usepackage{booktabs} % https://ctan.org/pkg/booktabs. enhances the quality of tables ,
+\usepackage{colortbl}
+\usepackage{hhline}
+
+%%% Herramientas para color
+\usepackage{tcolorbox} % https://osl.ugr.es/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+\tcbuselibrary{listings}
+
+\colorlet{ul}{red}
+\newtcbox{\caja}[1][]{
+  on line,
+  arc=1pt, outer arc=2pt,
+  colback=ul!5!white, colframe=ul!75!black,
+  boxsep=0pt, left=1pt, right=-0.5pt, top=2pt, bottom=1pt,
+  boxrule=0pt, toprule=1pt, bottomrule=1pt, #1
+}
+
+
+
+
+%%% Inclusión de Gráficos
+\usepackage{graphicx}
+
+\usepackage{wrapfig}
+\usepackage[export]{adjustbox} % Extiende graphicx para usar \clipbox, \trimbox y más.
+\usepackage[absolute, overlay]{textpos} % https://ctan.org/tex-archive/macros/latex/contrib/textpos
+\usepackage{pdfpages} % Inserta pdfs. https://texdoc.org/serve/pdfpages.pdf/0
+
+
+%%% Generación de Gráficos
+\usepackage{tikz}
+\usetikzlibrary{calc, patterns, snakes, arrows, arrows.meta, shapes.geometric} %
+\usetikzlibrary{automata}
+\usepackage{pgfplots}
+
+
+
+%%% Colores. http://latexcolor.com/
+% http://latexcolor.com/
+
+\definecolor{black}{rgb}{0,0,0}
+\definecolor{lightgrey}{rgb}{0.925, 0.925, 0.925}
+
+\definecolor{electriclime}{rgb}{0.8, 1.0, 0.0}
+\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{grreen}{rgb}{0.27, 0.7, 0.45}
+\definecolor{aoenglish}{rgb}{0.0, 0.5, 0.0}
+
+\definecolor{byzantine}{rgb}{0.74, 0.2, 0.64}
+
+\definecolor{DarkBlue}{rgb}{.11,.23,.60}
+\definecolor{cornflowerblue}{rgb}{0.39, 0.58, 0.93}
+\definecolor{darkslateblue}{rgb}{0.28, 0.24, 0.55}
+\definecolor{trueblue}{rgb}{0.0, 0.45, 0.81}
+
+\definecolor{cobalt}{rgb}{0.0, 0.28, 0.67}
+\definecolor{coolblack}{rgb}{0.0, 0.18, 0.39}
+\definecolor{lblue}{rgb}{0.6, 0.81, 0.93}
+
+\definecolor{reddark}{rgb}{.80,.2,.20}
+\definecolor{bittersweet}{rgb}{1.0, 0.44, 0.37}	
+\definecolor{blush}{rgb}{0.87, 0.36, 0.51}
+\definecolor{indianred}{rgb}{0.8, 0.36, 0.36}
+\definecolor{mediumcandyapplered}{rgb}{0.89, 0.02, 0.17}
+\definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+
+\definecolor{UMUblue}{RGB}{0,59,73} % Azul de la identidad visual corporativa de la UMU
+\colorlet{ejemplo}{red!50!black}
+
+
+%%% Hyperenlaces
+\usepackage{float}
+\usepackage{xurl}
+%\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,  
+	linkcolor= blue,
+	urlcolor=burntorange,
+	citecolor=ForestGreen,
+	hypertexnames=true
+}
+
+\urlstyle{same}
+
+
+%%% Algoritmos
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+
+\renewcommand{\algorithmicrequire}{\textbf{Entrada:}}
+\renewcommand{\algorithmicensure}{\textbf{Salida:}}
+\renewcommand{\algorithmiccomment}[1]{\textcolor{blue}{\# #1}}
+
+%% Algoritmo con tamaño de letra script en la cabecera.
+%% El tamaño del resto del algoritmo se define en el
+%% propio algoritmo 
+\newenvironment{algoritmo}[1][htb]{%
+	\floatname{algorithm}{Algoritmo}% Update algorithm name
+	\begin{algorithm}[#1]%
+	}{\end{algorithm}}
+\resetcounteronoverlays{algorithm}
+
+
+
+%% Código Python
+\usepackage[pygopt={style=default}]{pythontex}
+%\setpythontexworkingdir{outputPythontex}	
+
+%% Imágenes del máster  
+\pgfdeclareimage[width=2.2cm]{masterlogo}{../style/images/Logo-MIA.png}
+\pgfdeclareimage[width=5cm]{UMUlogo}{../style/images/SelloUMU-negativo.png}
+\pgfdeclareimage[width=\paperwidth, height=\paperheight]{titlebackground}{../style/images/UMUbackground.png}
+
+%% Colores para los itemizes y enumerates
+
+\setbeamercolor{itemize item}{fg=UMUblue}  
+\setbeamercolor{itemize subitem}{fg=UMUblue}
+\setbeamercolor{itemize subsubitem}{fg=UMUblue}
+
+\setbeamertemplate{itemize subsubitem}{\faAngleRight}
+\setbeamertemplate{itemize item}{\faArrowAltCircleRight}
+\setbeamertemplate{itemize item}{\faCaretSquareRight}
+
+\setbeamercolor{enumerate item}{fg=UMUblue}
+\setbeamercolor{enumerate subitem}{fg=UMUblue}
+\setbeamercolor{enumerate subsubitem}{fg=UMUblue}
+
+\setbeamercolor{description item}{fg=blue!50!black}
+\setbeamersize{description width=1cm}
+\setbeamersize{description width of=1cm}
+
+%% Colores para los bloques
+
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamerfont{block title}{size=\normalsize}
+\setbeamerfont{block body}{size=\normalsize}
+\setbeamercolor{block title}{bg=UMUblue!5!white, fg=UMUblue}
+\setbeamercolor{block body}{bg=white}
+
+\setbeamercolor{block title alerted}{fg=white,bg=red!80!black}
+%\setbeamercolor{block body alerted}{fg=UMUblue, bg=UMUblue!5!white}
+\setbeamercolor{alerted text}{fg=red!80!black}
+
+\setbeamercolor{block title example}{fg=white,bg=green!40!black}
+\setbeamercolor{example text}{fg=red}
+
+\setbeamercolor{math text}{fg=blue!30!black}
+\setbeamercolor{math text displayed}{fg=blue!50!black}
+
+%
+%\BeforeBeginEnvironment{theorem}{%
+%    \setbeamercolor{block title}{fg=white,bg=red!20!black}
+%    \setbeamerfont{normal text}{series=bfseries}
+%    r
+%    
+%    %\setbeamercolor{block body}{fg=black, bg=blue!20!white}
+%}
+%\AfterEndEnvironment{theorem}{
+%        \setbeamercolor{block title}{bg=UMUblue!5!white, fg=UMUblue}
+%		%\setbeamercolor{block body}{bg=white}
+%}
+
+
+
+%% Tamaño de los títulos de las diapositivas
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamerfont{framesubtitle}{size=\large}
+
+% Sin símbolos de navegación
+\setbeamertemplate{navigation symbols}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apariencia de la cabecera de todas las diapositivas excepto el frame principal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\setbeamercolor{lower separation line head}{bg=black}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \vskip0cm % % Pon un valor negativo si quieres que el título del tema aparezca más pegado arriba
+  \hskip-0.25cm
+  \begin{beamercolorbox}[wd=\textwidth]{frametitle}% Se adapta a la dimensión de la página
+  \begin{minipage}[t][1.2cm][b]{\dimexpr\paperwidth-4.0cm\relax}%
+        \usebeamerfont*{frametitle}
+        \color{UMUblue}\insertframetitle%
+        \ifx  \insertframesubtitle\@empty%
+          \strut\par%
+        \else
+          \par{\usebeamerfont*{framesubtitle}{\color{UMUblue} \insertframesubtitle}\strut\par}%
+        \fi%%
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}[t][1.4cm][b]{1.75cm}
+        \hfill \pgfuseimage{masterlogo} 
+  \end{minipage}%
+  \end{beamercolorbox}%
+  \vskip0ex
+  \begin{beamercolorbox}[colsep=0.2pt,wd=\paperwidth]{lower separation line head}
+  \end{beamercolorbox}
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apariencia para el pie de cada frame (formato compacto)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hrule
+  \hbox{%
+  % Primera caja para autores e institución
+  \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,left]{section in head/foot}%
+	\usebeamerfont{author in head/foot}
+	\hspace*{1em}
+	\insertshortauthor~~\beamer@ifempty{\insertshortinstitute}{}{(\insertshortinstitute)}
+  \end{beamercolorbox}%
+  %
+  % Segunda caja para la sección
+  \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+  	\color{UMUblue} 
+	\usebeamerfont{title in head/foot} 
+	\faAngleRight{} \insertsubtitle ~ ~ \faAngleRight{} \insertsection ~ ~ \faAngleRight{}
+ \insertsubsection
+    %\insertsubtitle % \insertsubsection
+  \end{beamercolorbox}
+  %
+  % Tercera caja para el curso y el número de página
+  \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,right]{section in head/foot}%
+	\usebeamerfont{date in head/foot}
+	\insertdate
+	\hspace*{1em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apariencia para el primer frame: la portada
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\setbeamertemplate{title page}{
+  \setbeamerfont{title}{size=\normalsize}
+  \setbeamerfont{subtitle}{size=\small}
+  \setbeamerfont{autores}{size=\scriptsize}
+  % Realizamos un dibujo
+  \begin{tikzpicture}[remember picture, overlay]
+    % Con un gráfico que hará de fondo
+    \node[above right, inner sep=0pt] at (current page.south west)
+    {
+      \pgfuseimage{titlebackground}
+    };
+    % Calcula las dimensiones de la caja
+    \newlength{\boxwidth}
+    \setlength{\boxwidth}{0.5\paperwidth}
+    \newlength{\boxheight}
+    \setlength{\boxheight}{0.40\paperheight}
+	% Desplazamiento a la derecha de la caja
+    \newlength{\shifttitle}
+    \setlength{\shifttitle}{5mm}
+    % Se pondrá un nodo justo en la mitad del folio y en el borde izquierdo.
+    \coordinate (start) at (current page.west);
+    % Dibuja el nodo de texto centrado en la mitad del folio
+    \node[white, anchor=west, 
+    	  minimum width=\boxwidth, 
+	  	  minimum height=\boxheight,  
+		  xshift=\shifttitle,  % Pero lo desplazamos un poco a la derecha para que no toque el borde.
+		 ] at (current page.west) {
+		 	\begin{minipage}{\boxwidth} % El contenido no puede ocupar más de medio folio
+				\usebeamerfont{title}
+    			\inserttitle % El título de la presentación.
+				\vskip0.5em
+				\usebeamerfont{subtitle}% El subtítulo de la presentación.
+				{\insertsubtitle\\[0.9cm]}
+		 		 \usebeamerfont{autores}
+				{\insertauthor\\[0.4cm]}%\par % Los autores de la presentación.
+				{\insertinstitute\\[0.4cm]} % Los centros de los autores.
+				{Máster en Inteligencia Artificial \vskip 0.5\baselineskip % Todos participan en el máster
+				\insertdate % Fecha (curso académico)
+				}
+ 			\end{minipage}};
+  \setlength{\shifttitle}{-.30\textwidth}
+  \node[xshift=\shifttitle] at (current page.east) {\pgfuseimage{UMUlogo}}; 
+  \end{tikzpicture}
+}
+\makeatother
+
+
+
+% sección en TOC
+\setbeamertemplate{section in toc}{\color{UMUblue} \inserttocsectionnumber.~\inserttocsection}
+
+% subsección en TOC
+\defbeamertemplate{subsection in toc}{mysections numbered}
+	{\leavevmode\leftskip=1em
+	 \parbox[t]{2em}{\inserttocsectionnumber.\inserttocsubsectionnumber.}\parbox[t]{\dimexpr\textwidth-2em\relax}{\inserttocsubsection}\par % label
+	}
+
+\setbeamertemplate{subsection in toc}[mysections numbered]
+
+ 
+%\setbeamertemplate{section in toc shaded}[default][50]
+
+% Lo que aparecerá entre secciones y subseciciones
+% Se puede indicar que secciones e quieren visualizar y cuáles no.
+% % \tableofcontents[
+%    sectionstyle=show/shaded,
+%    subsectionstyle=show/show/shaded,
+%    subsubsectionstyle=show/show/show/shaded
+%    ]
+
+\AtBeginSection[] % Do nothing for \section*
+{
+  \begin{frame}
+    \frametitle{Desarrollo}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+  \begin{frame}
+    \frametitle{Profundizamos en ...}
+    \tableofcontents[sectionstyle=show/shaded, currentsubsection]
+  \end{frame}
+}
+
+
+
+%  \AtBeginSubSubsection[]
+%    {
+%      \begin{frame}{Con más detalle ..}
+%        \tableofcontents[currentsection,currentsubsection,currentsubsubsection]
+%      \end{frame}
+%}
+
+\AtBeginSubsubsection[]{
+      \begin{frame}{Con más detalle ..}
+         \tableofcontents[sectionstyle=show/shaded,
+    				 subsectionstyle=show/shaded/shaded,
+                                  subsubsectionstyle=show/shaded/shaded/shaded
+                                  %subsectionstyle=show/shaded/hide
+                                  ]
+      \end{frame}
+}
+
+
+
+
+\usepackage{todonotes}
+\setuptodonotes{inline, color=orange}
+
+
+
+
+
+
+%%% Bibliografía
+%\usepackage{natbib}
+%\setcitestyle{authoryear,open={\color{blue}(},close={\color{blue})}} % Comandos relacionados con las citaciones
+%\bibliographystyle{unsrtnat}
+
+\usepackage[
+backend=biber
+%,style=authoryear-comp
+,style=apa
+%,style=authoryear-icomp
+%,style=reading
+,natbib=true
+]{biblatex}
+
+% Para no mostrar el campo note={} de las referencias del fichero .bib
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map{
+      \step[fieldset=note, null]
+    }
+  }
+}
+
+
+%\makeatletter
+%\renewbibmacro*{cite:author}{%
+%  \iffieldequals{namehash}{\cbx@lasthash}
+%% Multiple cites in one command
+%   {\setunit{\compcitedelim}%
+%    \printtext[bibhyperref]{%
+%      \usebibmacro{cite:plabelyear+extradate}}}%
+%% Single cite
+%   {\printtext[bibhyperref]{%
+%      \ifnameundef{labelname}
+%% No author/editor
+%       {\usebibmacro{cite:noname}%
+%         \savefield{namehash}{\cbx@lasthash}}
+%% Normal cite
+%       {\ifnameundef{shortauthor}
+%         {\printnames{labelname}}%
+%         {\cbx@apa@ifnamesaved
+%            {\printnames{shortauthor}}
+%            {\printnames[labelname]{author}%
+%             \addspace\printnames[sabrackets]{shortauthor}}}%
+%          \savefield{namehash}{\cbx@lasthash}}}}%
+%   \setunit{\multicitedelim}}
+%
+%\renewbibmacro*{cite}{%
+%  \iffieldequals{namehash}{\cbx@lasthash}
+%% Multiple cites in one command
+%   {\setunit{\compcitedelim}%
+%    \printtext[bibhyperref]{%
+%      \usebibmacro{cite:plabelyear+extradate}}}%
+%% Single cite
+%   {\printtext[bibhyperref]{%
+%      \ifnameundef{labelname}
+%% No author/editor
+%       {\usebibmacro{cite:noname}%
+%         \setunit{\printdelim{nameyeardelim}}%
+%         \usebibmacro{cite:plabelyear+extradate}%
+%         \savefield{namehash}{\cbx@lasthash}}
+%% Normal cite
+%       {\ifnameundef{shortauthor}
+%         {\printnames{labelname}}%
+%         {\cbx@apa@ifnamesaved
+%           {\printnames{shortauthor}}
+%           {\printnames[labelname]{author}%
+%            \addspace\printnames[sabrackets]{shortauthor}}}%
+%         \setunit{\printdelim{nameyeardelim}}%
+%        \usebibmacro{cite:plabelyear+extradate}%
+%        \savefield{namehash}{\cbx@lasthash}}}}%
+%   \setunit{\multicitedelim}}
+%
+%\renewbibmacro*{textcite}{%
+%  \iffieldequals{namehash}{\cbx@lasthash}
+%% Compact cite - more than one thing for same author
+%    {\setunit{\compcitedelim}%
+%     \printtext[bibhyperref]{%
+%       \usebibmacro{cite:plabelyear+extradate}}}
+%% New cite
+%    {\ifbool{cbx:parens}
+%       {\bibcloseparen\global\boolfalse{cbx:parens}}
+%       {}%
+%     \setunit{\textcitedelim}%
+%     \ifnameundef{labelname}
+%     % No author/editor
+%       {\iffieldundef{shorthand}%
+%    % Cite using title
+%         {\printtext[bibhyperref]{\usebibmacro{cite:noname}}%
+%          \setunit{\global\booltrue{cbx:parens}%
+%                   \printdelim{nonameyeardelim}%
+%                   \bibopenparen}%
+%          \printtext[bibhyperref]{%
+%            \usebibmacro{cite:plabelyear+extradate}}}
+%    % Cite using shorthand
+%         {\printtext[bibhyperref]{%
+%            \usebibmacro{cite:shorthand}}}}
+%  % Normal cite with author/editor
+%  % Normal full cite
+%       {\printtext[bibhyperref]{%
+%          \ifnameundef{shortauthor}%
+%    % Normal full cite
+%           {\printnames{labelname}}
+%    % Cite using short author
+%           {\cbx@apa@ifnamesaved
+%             {\printnames{shortauthor}}
+%             {\printnames[labelname]{author}}}}%
+%  % Year
+%        \setunit{\global\booltrue{cbx:parens}%
+%                 \printdelim{nameyeardelim}%
+%                 \bibopenparen}%
+%  % Put the shortauthor inside the year brackets if necessary
+%        \printtext[bibhyperref]{%
+%          \ifnameundef{shortauthor}
+%           {}
+%           {\cbx@apa@ifnamesaved
+%             {}
+%             {\printnames{shortauthor}%
+%              \setunit{\printdelim{innernameyeardelim}}}}%
+%  % Print prenote (belongs to first cite)
+%        \ifnumequal{\value{citecount}}{1}
+%           {\usebibmacro{prenote}}
+%           {}%
+%  % Actual year printing
+%        \usebibmacro{cite:plabelyear+extradate}%
+%  % Save name hash for checks later
+%        \savefield{namehash}{\cbx@lasthash}}%
+%    \stepcounter{textcitecount}}}}
+%
+%\renewbibmacro*{cite:plabelyear+extradate}{%
+%  \iffieldundef{labelyear}{}
+%    {\clearfield{labelmonth}% don't want months in citations
+%     \clearfield{labelday}% don't want days in citations
+%     \clearfield{labelendmonth}% don't want months in citations
+%     \clearfield{labelendday}% don't want days in citations
+%     \clearfield{labelyeardivision}% don't want yeardivisions in citations
+%     \clearfield{labelendyeardivision}% don't want yeardivisions in citations
+%     \iffieldsequal{labelyear}{labelendyear}% Don't want no-op year ranges
+%       {\clearfield{labelendyear}}
+%       {}%
+%     \iffieldundef{origyear}
+%       {}
+%       {\printorigdate%
+%        \setunit*{\addslash}}%
+%     \iffieldundef{related}
+%       {}
+%       {\iffieldequalstr{relatedtype}{reprintfrom}
+%         {\entrydata*{\thefield{related}}{\printlabeldateextra}%
+%          \setunit*{\addslash}}
+%         {}}%
+%     \printlabeldateextra}}
+%
+%\renewbibmacro*{citeyear}{%
+%  \iffieldundef{labelyear}
+%    {\usebibmacro{cite:init}}
+%    {\iffieldequals{namehash}{\cbx@lasthash}
+%       {\setunit{\compcitedelim}%
+%        \printtext[bibhyperref]{\usebibmacro{cite:plabelyear+extradate}}}
+%       {\printtext[bibhyperref]{\usebibmacro{cite:plabelyear+extradate}}%
+%        \savefield{namehash}{\cbx@lasthash}}}%
+%  \setunit{\multicitedelim}}
+%\makeatother
+%
+
+
+
+%With biblatex you can extend the bibliography item template to automatically select the appropriate icon.
+% \setbeamertemplate{bibliography item}[triangle]
+
+\setbeamertemplate{bibliography item}{%
+  \ifboolexpr{ test {\ifentrytype{book}} or test {\ifentrytype{mvbook}}
+    or test {\ifentrytype{collection}} or test {\ifentrytype{mvcollection}}
+    or test {\ifentrytype{reference}} or test {\ifentrytype{mvreference}} }
+    {\setbeamertemplate{bibliography item}[book]}
+    {\ifentrytype{online}
+       {\setbeamertemplate{bibliography item}[online]}
+       {\setbeamertemplate{bibliography item}[article]}}%
+  \usebeamertemplate{bibliography item}}
+
+\defbibenvironment{bibliography}
+  {\list{}
+     {\settowidth{\labelwidth}{\usebeamertemplate{bibliography item}}%
+      \setlength{\leftmargin}{\labelwidth}%
+      \setlength{\labelsep}{\biblabelsep}%
+      \addtolength{\leftmargin}{\labelsep}%
+      \setlength{\itemsep}{\bibitemsep}%
+      \setlength{\parsep}{\bibparsep}}}
+  {\endlist}
+  {\item}
+  
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% embed_video.tex. // BEGIN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \embedvideo{<poster or text>}{<video file (MP4+H264)>}
+% \embedvideo*{...}{...}                     % auto-play
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[bigfiles]{pdfbase}
+\ExplSyntaxOn
+\NewDocumentCommand\embedvideo{smm}{
+  \group_begin:
+  \leavevmode
+  \tl_if_exist:cTF{file_\file_mdfive_hash:n{#3}}{
+    \tl_set_eq:Nc\video{file_\file_mdfive_hash:n{#3}}
+  }{
+    \IfFileExists{#3}{}{\GenericError{}{File~`#3'~not~found}{}{}}
+    \pbs_pdfobj:nnn{}{fstream}{{}{#3}}
+    \pbs_pdfobj:nnn{}{dict}{
+      /Type/Filespec/F~(#3)/UF~(#3)
+      /EF~<</F~\pbs_pdflastobj:>>
+    }
+    \tl_set:Nx\video{\pbs_pdflastobj:}
+    \tl_gset_eq:cN{file_\file_mdfive_hash:n{#3}}\video
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaInstance/Subtype/Video
+    /Asset~\video
+    /Params~<</FlashVars (
+      source=#3&
+      skin=SkinOverAllNoFullNoCaption.swf&
+      skinAutoHide=true&
+      skinBackgroundColor=0x5F5F5F&
+      skinBackgroundAlpha=0
+    )>>
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaConfiguration/Subtype/Video
+    /Instances~[\pbs_pdflastobj:]
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaContent
+    /Assets~<<
+      /Names~[(#3)~\video]
+    >>
+    /Configurations~[\pbs_pdflastobj:]
+  }
+  \tl_set:Nx\rmcontent{\pbs_pdflastobj:}
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Activation~<<
+      /Condition/\IfBooleanTF{#1}{PV}{XA}
+      /Presentation~<</Style/Embedded>>
+    >>
+    /Deactivation~<</Condition/PI>>
+  }
+  %
+  \hbox_set:Nn\l_tmpa_box{#2}
+  \tl_set:Nx\l_box_wd_tl{\dim_use:N\box_wd:N\l_tmpa_box}
+  \tl_set:Nx\l_box_ht_tl{\dim_use:N\box_ht:N\l_tmpa_box}
+  \tl_set:Nx\l_box_dp_tl{\dim_use:N\box_dp:N\l_tmpa_box}
+  \pbs_pdfxform:nnnnn{1}{1}{}{}{\l_tmpa_box}
+  %
+  \pbs_pdfannot:nnnn{\l_box_wd_tl}{\l_box_ht_tl}{\l_box_dp_tl}{
+    /Subtype/RichMedia
+    /BS~<</W~0/S/S>>
+    /Contents~(embedded~video~file:#3)
+    /NM~(rma:#3)
+    /AP~<</N~\pbs_pdflastxform:>>
+    /RichMediaSettings~\pbs_pdflastobj:
+    /RichMediaContent~\rmcontent
+  }
+  \phantom{#2}
+  \group_end:
+}
+\ExplSyntaxOff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% embed_video.tex. // END
+%\embedvideo{\includegraphics[width=.15\textwidth]{thumbnail.jpg}}{sea.mp4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{movie15}
+%\includemovie[controls]{.6\linewidth}{0.33\linewidth}{sea.mp4}
+
+\usepackage{multimedia} % IMPORTANTE https://tex.stackexchange.com/questions/483425/pympress-video-howto
+%\movie[externalviewer]{\includegraphics[width=.15\textwidth, keepaspectratio]{thumbnail.jpg}}{sea.mp4}
+%\movie[showcontrols=true]{\includegraphics[width=.15\textwidth, keepaspectratio]{thumbnail.jpg}}{sea.mp4}. ## NO FUNCIONA
+
+
+
+
+
+%%%% Nuevos comandos.
+
+\newcommand{\InsertarImagenFondo}[2]{%
+  \usebackgroundtemplate{%
+    \tikz[overlay,remember picture] \node[opacity=#1, at=(current page.center)] {
+      \includegraphics[height=\paperheight,width=\paperwidth]{#2}};
+    }
+  }
+
+% Ejemplo de uso
+%	{ \InsertarImagenFondo{0.7}{imagen-fondo}
+%\begin{frame}
+%Tu contenido aquí...
+%\end{frame}
+%	}
+
+
+
+
+
+
+
+\makeatletter 
+\def\beamer@framenotesbegin{
+    \hypersetup{pageanchor=false}
+    \usebeamercolor[fg]{normal text}
+    \gdef\beamer@noteitems{}% 
+    \gdef\beamer@notes{}% 
+}
+
+\defbeamertemplate*{note page}{custom}
+{%
+  {%
+    \hypersetup{pageanchor=false}
+    \scriptsize
+    \usebeamerfont{note title}\usebeamercolor[fg]{note title}%
+    \ifbeamercolorempty[bg]{note title}{}{%
+      \insertvrule{.10\paperheight}{note title.bg}%
+      \vskip-.10\paperheight%
+      \nointerlineskip%
+    }%
+%    \vbox{
+%      \hfill\insertslideintonotes{0.25}\hskip-\Gm@rmargin\hskip0pt%
+%      \vskip-0.25\paperheight%
+%      \nointerlineskip
+%       \begin{pgfpicture}{0cm}{0cm}{0cm}{0cm}
+%         \begin{pgflowlevelscope}{\pgftransformrotate{90}}
+%           {\pgftransformshift{\pgfpoint{-2cm}{0.2cm}}%
+%             \pgftext[base,left]{\usebeamerfont{note date}\usebeamercolor[fg]{note date}\the\year-\ifnum\month<10\relax0\fi\the\month-\ifnum\day<10\relax0\fi\the\day}}
+%         \end{pgflowlevelscope}
+%       \end{pgfpicture}
+%    }
+    \nointerlineskip
+    \vbox to .10\paperheight{\vskip0.5em
+      %\hbox{\insertshorttitle[width=0.75\textwidth]}%
+      \setbox\beamer@tempbox=\hbox{\insertsection}%
+      \hbox{\ifdim\wd\beamer@tempbox>1pt{\hskip4pt\raise3pt\hbox{\vrule
+            width0.4pt height3pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\begin{minipage}[t]{0.71\textwidth}\def\breakhere{}\scriptsize\insertsection\end{minipage}}\fi%
+      }%
+      \setbox\beamer@tempbox=\hbox{\insertsubsection}%
+      \vskip-3pt 
+      \hbox{\ifdim\wd\beamer@tempbox>1pt{\hskip17.4pt\raise3pt\hbox{\vrule
+            width0.4pt height3pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\begin{minipage}[t]{0.71\textwidth}\def\breakhere{}\scriptsize \insertsubsection\end{minipage}} \fi%
+      }%
+      \setbox\beamer@tempbox=\hbox{\insertshortframetitle}%
+      \vskip-3pt
+      \hbox{\ifdim\wd\beamer@tempbox>1pt{\hskip30.8pt\raise3pt\hbox{\vrule
+            width0.4pt height3pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\scriptsize \insertshortframetitle[width=0.67\textwidth]}\fi%
+      }%
+      \vfil}%
+  }%
+  \ifbeamercolorempty[bg]{note page}{}{%
+    \nointerlineskip%
+    \insertvrule{.90\paperheight}{note page.bg}%
+    \vskip-.90\paperheight%
+  }%
+  \vskip.25em
+  \nointerlineskip
+  
+  %\insertnote
+  %\begin{minipage}[t][\paperheight]{\paperweight}
+  \hskip-1cm\makebox[\paperwidth]{\parbox{0.98\paperwidth}{\insertnote}} % Alinea el contenido completamente a la izquierda
+  %\end{minipage}
+  
+  
+%  \hypersetup{pageanchor=true}
+}
+\makeatother
+
+
+\setbeamertemplate{note page}[custom]
+
+\setbeamercolor{note title}{fg=orange!75!black,bg=orange!10}
+\setbeamercolor{note page}{fg=black,bg=gray!5!white}
+\setbeamerfont{note page}{size=\small} % \scriptsize}
+\addtobeamertemplate{note page}{\setbeamerfont{itemize/enumerate subbody}{size=\footnotesize}}{}
+\addtobeamertemplate{note page}{\setbeamerfont{itemize/enumerate subsubbody}{size=\scriptsize}}{}
+%\setbeamertemplate{note page}[compress]
+
+
+
+
+% -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+% ENTORNOS COMUNES PROPIOS
+% -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+%\usepackage{exercise}
+\let\exercise\undefined
+\newtheorem{exercise}{\translate{Exercise}}[section]
+\def \roed {normal text.bg!10!UMUblue}
+\def \exerciseblockcolour {\roed}
+\AtBeginEnvironment{exercise}{
+  \setbeamercolor{block title}{fg=white,bg=normal text.bg!10!red}
+  \setbeamercolor{block title}{fg=white,bg=\exerciseblockcolour}
+  \setbeamertemplate{itemize items}[circle]      
+  \setbeamercolor{itemize item}{fg=\exerciseblockcolour}
+  \setbeamercolor{itemize subitem}{fg=\exerciseblockcolour}
+  \setbeamercolor{itemize subsubitem}{fg=\exerciseblockcolour}
+  \setbeamercolor{enumerate item}{fg=\exerciseblockcolour}
+  \setbeamercolor{enumerate subitem}{fg=\exerciseblockcolour}
+  \setbeamercolor{enumerate subsubitem}{fg=\exerciseblockcolour}
+} 
+
+% -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+% COMANDOS COMUNES PROPIOS
+% -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+\newcommand{\sigue}{\hfil \caja{... sigue....} }
+
+\newcommand{\fin}[1][red!50!white!100]{\centering \textcolor{#1}{\rule{1.0cm}{0.15cm}} \textit{Fin} \textcolor{#1}{\rule{1.0cm}{0.15cm}}}
+
+
+\newcommand{\nota}[1]{\todo[inline, bordercolor=black!20, backgroundcolor=white!20]{#1}}
+\newcommand{\falta}[1]{\todo[inline, bordercolor=blue!30, backgroundcolor=gray!20]{#1}}
+\newcommand{\proposito}[1]{\todo[inline, bordercolor=blue!40, backgroundcolor=blue!40]{#1}}
+
+
+
+\newcommand{\ds}{\displaystyle}
+\newcommand{\A}{{\cal A}}
+\renewcommand{\P}{{\cal P}}
+\newcommand{\mc}{\multicolumn} 
+
+\renewcommand{\c}[1]{{\cal #1}}
+\newcommand{\mbb}[1]{\mathbb{#1}}
+\newcommand{\mbf}[1]{\mathbf{#1}}
+
+
+\newcommand{\No}{\textcolor{red!70!black}{\ding{56}}}
+\newcommand{\Si}{\textcolor{green!70!black}{\ding{52}}}
+\newcommand{\fallo}{\No}
+\newcommand{\ok}{\Si}
+
+\newcommand{\unEjemplo}{\textcolor{red!50!black}{Ejemplo:\relax{} }}
+
+\newcommand{\concepto}[1]{\textcolor{blue!70!white!50!red}{\textbf{#1}}}
+%1º
+%\newcommand{\key}[2][cobalt]{\textbf{\textcolor{#1}{#2\relax{}}}}
+\newcommand{\key}[2][blue!75!black]{\textbf{\textcolor{#1}{#2\relax{}}}}
+\newcommand{\cm}[2][ForestGreen!75!black]{\textcolor{#1}{\ttfamily \bfseries #2 \relax{}}}
+
+\newcommand{\paso}[1]{\textbf{\textcolor{olive!60!magenta}{#1}}}
+
+
+
+\newcommand{\cmg}[1]{\cm[ForestGreen!75!black]{#1}}
+\newcommand{\cmb}[1]{\cm[blue]{#1}}
+\newcommand{\cmn}[1]{\cm[black]{#1}}
+\newcommand{\cmr}[1]{\cm[red!75!black]{#1}}
+
+
+\newcommand{\cmbox}[2][ForestGreen!75!black]{
+	\ifthenelse{\equal{#1}{verb}}
+		{\colorbox{lightgrey}{\ttfamily \bfseries \!\!#2\!\!}\!}
+		{\colorbox{lightgrey}{\color{#1} \ttfamily \bfseries \!\!#2\!\!}\!}
+}
+
+\newcommand{\cmboxb}[2][ForestGreen!75!black]{
+	\ifthenelse{\equal{#1}{verb}}
+		{\colorbox{black}{\ttfamily \bfseries \!\!#2\!\!}\!}
+		{\colorbox{black}{\color{#1} \ttfamily \bfseries \!\!#2\!\!}\!}
+}
+
+
+
+%\boldmath
+%\emphmath
+%\everymath{\color{black}}
+%\everydisplay{\color{black}}
+
+
+% https://tex.stackexchange.com/questions/313736/in-beamer-whats-the-right-way-to-scale-a-slide-element-down-to-better-fit
+%\usepackage{environ,calc}
+%
+%\newlength{\envwidth}
+%\NewEnviron{scale}[1]{
+%\setlength{\envwidth}{\linewidth/\real{#1}}
+%\scalebox{#1}{\begin{minipage}{\envwidth}\BODY\end{minipage}}
+%}
+
+%\newlength{\envwidth}
+%\newsavebox{\scalecontent}
+
+%\newenvironment{scale}[1]
+%{
+%    \setlength{\envwidth}{\linewidth/\real{#1}} % Calcular el ancho en función del factor de escala
+%    \begin{lrbox}{0\null\global\setbox\scalecontent} % Iniciar una caja para almacenar el contenido
+%    \begin{minipage}{\envwidth}  % Crear el minipage con el ancho calculado
+%}
+%{
+%    \end{minipage}
+%    \end{lrbox}
+%    \scalebox{#1}{\usebox{\scalecontent}} % Escalar y mostrar el contenido almacenado en la caja
+%}
+
+
+\usepackage{etoolbox}  % Necesario para \collectbox
+
+% Definir el entorno 'scale' usando collectbox para evitar el problema con parámetros
+\newlength{\envwidth}
+
+\newenvironment{scale}[1]
+{%
+    \setlength{\envwidth}{\linewidth/\real{#1}} % Calcular el ancho en función del factor de escala
+    \begin{collectbox} % Iniciar la captura del contenido del entorno
+        \scalebox{#1}{\begin{minipage}{\envwidth}} % Escalar y establecer el ancho de minipage
+}%
+{%
+        \end{minipage}%
+    \end{collectbox} % Terminar la captura y mostrar el contenido
+}
