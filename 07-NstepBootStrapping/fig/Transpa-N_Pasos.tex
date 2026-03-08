@@ -1,0 +1,900 @@
+%% Ejemplo de la plantilla de latex para las diapositivas del Máster en IA 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Valores para el ratio de aspecto: 43, 169 
+%\documentclass[10pt, envcountsect, presentation, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+\documentclass[10pt, envcountsect, handout, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Incluir fichero de estilo del máster
+\input ../style/plantillaMasterIA.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\addbibresource{../references.bib}
+
+
+
+%\setbeameroption{show only notes} % Only notes
+%\setbeameroption{show notes on second screen=right}  % Both
+%\setbeamertemplate{note page}[compress]
+\setbeameroption{hide notes} % Only slides
+
+
+
+\renewcommand*\footnoterule{}
+\setbeamerfont{footnote}{size=\tiny}
+
+
+
+
+%\input{embed_video.tex}
+%\usepackage{movie15}b
+\usepackage{multimedia}
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Información que aparecerá en la portada
+\title[Aprendizaje por Refuerzo]{Aprendizaje por Refuerzo}
+\subtitle{Métodos de n-Pasos} % short title for footer
+
+\author[L. D. Hernández] % Para el pie de página, poner los autores abreviados separados por comas.
+{%
+	\sc{Luis Daniel Hernández Molinero }\\ % Autor 1
+	\textit{Ciencia de la Computación e Inteligencia Artificial}\\  % Area de conocimiento
+	\textit{Dept. Ingeniería de la Información y las Comunicaciones}\\  % Departamento
+	\\   % No dejes espacio entre esta línea y la llave siguiente 
+}
+
+\institute[DIIC]% % Poner las iniciales de los diferentes departamentos de los autores separadas por comas.
+{
+	\textit{Universidad de Murcia}
+}
+
+
+\newcounter{lastyear}
+\setcounter{lastyear}{\the\year}
+\addtocounter{lastyear}{-1}
+
+\date{\arabic{lastyear} / \the\year} % Curso académico
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Contenido de las diapositivas
+\setbeamerfont{normal text}{size=\normalsize} % Modifica el tamaño del texto de las diapositivas.
+\AtBeginDocument{\usebeamerfont{normal text}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Índice de Contenidos}
+	\tableofcontents 
+	
+\note{
+
+}
+
+\end{frame}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Introducción}
+\begin{itemize}
+	\item Un \key{resumen} de los métodos MC y TD(0) Hemos estudiado:
+	
+	\centerline{\scalebox{.8}{
+		\begin{minipage}{1\textwidth}
+		\begin{tabularx}{\textwidth}{|l|Y|Y|}
+			\hline
+			\textbf{Característica}        & \textbf{Monte Carlo (MC)}                        & \textbf{TD(0)}                                   \\ \hline
+			\textbf{Requiere episodios completos} & Sí, requiere un episodio completo               & No, se actualiza paso a paso                     \\ \hline
+			\textbf{Varianza}               & Alta, debido a las fluctuaciones del retorno     & Baja, ya que se basa en predicciones parciales    \\ \hline
+			\textbf{Eficiencia}             & Puede ser menos eficiente en episodios largos    & Más eficiente, actualiza continuamente           \\ \hline
+			\textbf{Estabilidad}            & Más estable en entornos con retorno claro       & Menos estable debido a la propagación de errores \\ \hline
+			\textbf{Aplicabilidad}          & No es adecuado para entornos no episódicos       & Adecuado para entornos no episódicos             \\ \hline
+		\end{tabularx}
+		\end{minipage} 
+	}}
+	
+    \item \key{Los métodos \textbf{n-step TD} generalizan} los métodos \textbf{MC} y \textbf{TD} para que uno pueda pasar suavemente de uno a otro según sea necesario para cumplir con las demandas de una tarea en particular.
+    \item Los métodos \textbf{MC} están en un extremo del espectro y los métodos \textbf{TD de un solo paso} en el otro.
+    \item \key{Los mejores métodos} suelen ser aquellos que se encuentran entre estos dos extremos.
+    
+    \begin{itemize}
+    \item Conviene explorar en intervalo de tiempo más amplios.
+    \end{itemize}
+    
+    \item \key{Estudiaremos} primero la predicción y después el control
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Predicción TD de n pasos}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Predicción n-step TD}
+\begin{itemize}
+    \item Realizar una actualización basada en \key{una secuencia de \textbf{n} recompensas}:
+    \begin{itemize}
+        \item Más de una, pero menos que todas ellas.
+    \end{itemize}
+    \item \key{Gráficamente}, se pueden representan las siguientes variantes de TD:
+
+	\centerline{\includegraphics[width=.5\textwidth]{fig/backup_diagrams_of_n_step}}
+
+	\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Predicción n-step TD (Actualización)}
+\begin{itemize}
+	\item Recuerda: $\color{violet} {Nuevo Estimado} = {Viejo Estimado} + {Tama\text{\itñ}o del Paso} \cdot \left( {Objetivo} - {Viejo Estimado} \right).$
+	
+    \item El \key{objetivo} (target) para una actualización arbitraria de n-step es el \key{retorno n-step}:
+    \begin{align*}
+    	G_{t:t+1} & \doteq  R_{t+1} + \gamma V_t(S_{t+1}) \\
+    	G_{t:t+2} & \doteq  R_{t+1} + \gamma R_{t+2} + \gamma^2 V_{t+1}(S_{t+2}), \\
+    	& \cdots  \\
+		G_{t:t+n} & \doteq R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^{n} V_{t+n-1}(S_{t+n}) \quad \forall n\geq 1, \forall t \text{ t.q }  0 \leq t < T-n  \\
+		G_{t:t+n} & \doteq G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots + \gamma^{T-t-1} R_T \text{ si } t+n\geq T
+	\end{align*} 
+
+	
+	\vskip -1.0cm
+	
+	~
+    
+    \item \key{Los retornos n-step} pueden considerarse \key{aproximaciones} del retorno completo, \key{truncadas} después de \(n\) pasos y luego corregidas por los términos faltantes.
+
+    \item La fórmula para la \key{actualización n-step} es:
+    $
+    V_{t+n}(S_t) = V_{t+n-1}(S_t) + \alpha \left( {\color{red} G_{t:t+n}} - V_{t+n-1}(S_t) \right)
+    $
+    \item Mientras que los valores de todos los demás estados permanecen inalterados: 
+    
+     \hfil $
+    V_{t+n}(s) = V_{t+n-1}(s) \quad \text{para todos } s \neq S_t
+    $
+    \item Una \key{expresión equivalente} es la siguiente: 
+    
+ 
+    \centerline{$
+     V(S_t) \leftarrow V(S_t) + \alpha \left[ {\color{reddark} \sum_{k=1}^{n} \gamma^{k-1} R_{t+k} + \gamma^n V(S_{t+n})} - V(S_t) \right]
+    $}
+    
+ 
+\end{itemize}
+	
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{DT de $n$-pasos para estimar $v_\pi$}{\cite{Sutton2018}}
+	
+	\centerline{\footnotesize$
+	V(S_t) \leftarrow V(S_t) + \alpha \left[ \sum_{k=1}^{n} \gamma^{k-1} R_{t+k} + \gamma^n V(S_{t+n}) - V(S_t) \right]
+	$}
+	
+	\begin{algorithm}[H]
+		\centering
+		\caption{DT de $n$-pasos para estimar $V\approx v_\pi$}
+		\includegraphics[width=.67\textwidth]{fig/alg_n_step_TD}
+	\end{algorithm}
+	
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Un ejemplo para 3 pasos}{$G_{t:t+3} \doteq  R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \gamma^3 V_{t+2}(S_{t+3})$}
+\centerline{
+\scalebox{.9}{
+\begin{minipage}{.9\textwidth}
+	
+	
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		\node[state] (S0) {S$_0$};
+	\end{tikzpicture}
+	
+	
+
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {S$_0$};
+		\node[state, right of=S0] (S1) {S$_1$};
+
+		
+		% Transiciones
+		\draw (S0) edge node[above] {R$_1$} (S1);
+		\node[right=0mm of S1] {\fbox{$t=0$}};
+				
+	\end{tikzpicture}
+	
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {S$_0$};
+		\node[state, right of=S0] (S1) {S$_1$};
+		\node[state, right of=S1] (S2) {S$_2$};
+
+		
+		% Transiciones
+		\draw (S0) edge node[above] {R$_1$} (S1);
+		\draw (S1) edge node[above] {R$_2$} (S2);
+
+		
+		
+	\end{tikzpicture}
+	
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {$\color{red} S_0$};
+		\node[state, right of=S0] (S1) {S$_1$};
+		\node[state, right of=S1] (S2) {S$_2$};
+		\node[state, right of=S2] (S3) {S$_3$};
+
+		
+		% Transiciones
+		\draw (S0) edge node[above] {R$_1$} (S1);
+		\draw (S1) edge node[above] {$\gamma R_2$} (S2);
+		\draw (S2) edge node[above] {$\gamma^2 R_3$} (S3);
+		
+		\node[right=0mm of S3] (form3) {$\gamma^3 V(S_3)$};
+		\node[right=5mm of form3] {\fbox{$t=2$} \fbox{$\tau=0$}};  
+		
+	\end{tikzpicture}
+	
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {S$_0$};
+		\node[state, right of=S0] (S1) {$\color{red} S_1$};
+		\node[state, right of=S1] (S2) {S$_2$};
+		\node[state, right of=S2] (S3) {S$_3$};
+		\node[state, right of=S3] (S4) {S$_4$};
+	
+		
+		% Transiciones
+		\draw (S0) edge node[above] {} (S1);
+		\draw (S1) edge node[above] {$R_2$} (S2);
+		\draw (S2) edge node[above] {$\gamma R_3$} (S3);
+		\draw (S3) edge node[above] {$\gamma^2 R_4$} (S4);
+	
+		\node[right=0mm of S4] (form4) {$\gamma^3 V(S_4)$};
+		\node[right=5mm of form4] {\fbox{$t=3$} \fbox{$\tau=1$}}; 
+		
+	\end{tikzpicture}
+	
+	
+	\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {S$_0$};
+		\node[state, right of=S0] (S1) {S$_1$};
+		\node[state, right of=S1] (S2) {$\color{red} S_2$};
+		\node[state, right of=S2] (S3) {S$_3$};
+		\node[state, right of=S3] (S4) {S$_4$};
+		\node[state, right of=S4] (S5) {S$_5$};
+		
+		% Transiciones
+		\draw (S0) edge node[above] {} (S1);
+		\draw (S1) edge node[above] {} (S2);
+		\draw (S2) edge node[above] {$R_3$} (S3);
+		\draw (S3) edge node[above] {$\gamma R_4$} (S4);
+		\draw (S4) edge node[above] {$\gamma^2 R_5$} (S5);
+		\node[right=0mm of S5] (T5) {\fbox{$T=5$}};
+		\node[right=0mm of T5] {\fbox{$t=4$} \fbox{$\tau=2$}};
+		
+	\end{tikzpicture}
+	
+		\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+		
+		% Nodos
+		\node[state] (S0) {S$_0$};
+		\node[state, right of=S0] (S1) {S$_1$};
+		\node[state, right of=S1] (S2) {$S_2$};
+		\node[state, right of=S2] (S3) {$\color{red}  S_3$};
+		\node[state, right of=S3] (S4) {S$_4$};
+		\node[state, right of=S4] (S5) {S$_5$};
+		
+		% Transiciones
+		\draw (S0) edge node[above] {} (S1);
+		\draw (S1) edge node[above] {} (S2);
+		\draw (S2) edge node[above] {} (S3);
+		\draw (S3) edge node[above] {$R_4$} (S4);
+		\draw (S4) edge node[above] {$\gamma R_5$} (S5);
+		
+		\node[right=0mm of S5] {\fbox{$t=5$} \fbox{$\tau=3$}};
+	\end{tikzpicture}
+	
+	
+	
+\begin{tikzpicture}[->, >=Stealth, node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+	
+	% Nodos
+	\node[state] (S0) {S$_0$};
+	\node[state, right of=S0] (S1) {S$_1$};
+	\node[state, right of=S1] (S2) {S$_2$};
+	\node[state, right of=S2] (S3) {S$_3$};
+	\node[state, right of=S3] (S4) {$\color{red}  S_4$};
+	\node[state, right of=S4] (S5) {S$_5$};
+	
+	% Transiciones
+	\draw (S0) edge node[above] {} (S1);
+	\draw (S1) edge node[above] {} (S2);
+	\draw (S2) edge node[above] {} (S3);
+	\draw (S3) edge node[above] {} (S4);
+	\draw (S4) edge node[above] {$R_5$} (S5);
+	
+	\node[right=0mm of S5] {\fbox{$t=6$} \fbox{$\tau=4$}};
+	
+\end{tikzpicture}
+\end{minipage}}}
+
+
+\TPMargin{0mm}%
+\begin{textblock}{9}(7, 3) \small
+\includegraphics[width=\textwidth,trim=35 5 5 350, clip]{fig/alg_n_step_TD}
+\end{textblock}
+
+
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+\begin{frame}{Propiedades de los Retornos de \( n \) Pasos en TD}
+	
+	\begin{itemize}
+		\item \textbf{Retornos de \( n \) pasos} utilizan la función de valor \( V_{t+n-1} \) para corregir las recompensas faltantes más allá de \( R_{t+n} \).
+		
+		\item El retorno de \( n \) pasos toma en cuenta más información que solo el valor \( V_{t+n-1}(s) \), ya que incluye las recompensas obtenidas durante los \( n \) pasos y una estimación de los valores futuros (a través de \( V_{t+n-1}(s_{t+n}) \)).
+
+		\item La propiedad de reducción de error garantiza que el peor error del retorno esperado de \( n \) pasos es:
+		\[\ds
+		\max_s \Big| E_{\pi}[G_{t:t+n} | S_t = s] - v_{\pi}(s) \Big| \leq \gamma^n \max_s \Big| V_{t+n-1}(s) - v_{\pi}(s) \Big|
+		\]
+		\item \key{Convergencia}: Los métodos TD de \( n \) pasos convergen a las predicciones correctas bajo condiciones técnicas adecuadas.
+		\item Los métodos TD de \( n \) pasos son una \textbf{familia sólida de métodos}, con los métodos TD de un solo paso y Monte Carlo como miembros extremos.
+		
+		\centerline{\textbf{Pero depende de $\alpha$}}
+	\end{itemize}
+
+\end{frame}
+	
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: ¿Qué valor de $n$ es mejor?}{$n$ pasos en el Random Walk}
+	\centerline{
+		\includegraphics[width=0.8\textwidth]{fig/randomWalk}
+	}
+	
+	\begin{columns}
+		\begin{column}{.5\textwidth}
+			\includegraphics[width=\textwidth]{fig/Performance_of_n_step_TD}
+		\end{column}
+		%
+		\begin{column}{.5\textwidth}
+			\begin{itemize}
+				\item 19 estados, saliendo por la izquierda con -1.
+				
+				\item Rendimiento de los métodos TD de $n$ pasos en función de \( \gamma \), para varios valores de \( n \), en una tarea de random walk de 19 estados.
+				
+				\item La medida de rendimiento  es la raíz cuadrada del error cuadrada promedio entre las predicciones al final del episodio para los 19 estados y sus valores verdaderos, entonces se promedian sobre los primeros 10 episodios y se realizan 100 repeticiones de todo el experimento (se usaron los mismos conjuntos de caminatas para todas las configuraciones de parámetros). 
+				
+				
+			\end{itemize}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Control TD de n pasos}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Aprendizaje On-Policy de $n$ Pasos}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Variantes de SARSA}
+	\begin{itemize}
+		\item Realizar una actualización basada en una \key{secuencia de \textbf{n} recompensas}:
+		\begin{itemize}
+			\item Más de una, pero menos que todas ellas.
+		\end{itemize}
+		\item \key{Gráficamente}, se representan las siguientes variantes de Sarsa:
+		
+		\centerline{\includegraphics[width=.7\textwidth]{fig/backup_diagrams_of_n_step_sarsa}}
+		
+	\end{itemize}
+	
+	
+	\note<1>{
+		\begin{itemize}
+			\item Se muestran los Diagramas de respaldo para los métodos de \(n\)-pasos para valores estado–acción. Estos métodos abarcan desde la actualización de un paso de Sarsa(0) hasta la actualización de todo el episodio del método Monte Carlo. 
+			
+			\item En el medio se encuentran las actualizaciones de \(n\)-pasos, basadas en \(n\) pasos de recompensas reales y el valor estimado del \(n\)-ésimo siguiente par estado–acción, todos descontados adecuadamente. 
+			
+			\item En el extremo derecho se encuentra el diagrama de respaldo para el método de \(n\)-pasos de Sarsa Esperado.
+			
+			\item Consiste en una cadena lineal de acciones y estados de muestra, igual que en n-pasos Sarsa, excepto que su último elemento es una rama sobre todas las posibilidades de acción ponderadas por su probabilidad bajo la política \( \pi \).
+			
+			\item Vamos mostrar cómo se actualizan las funciones de valor sobre las acciones tanta para el Sarsa de n-pasos como el Sarsa esperado de n-pasos.
+		\end{itemize}
+		
+	\fin
+	}
+\end{frame}
+			
+	
+			
+
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\begin{frame}{Sarsa's de $n$-pasos}
+	
+
+\begin{itemize}
+	\item  La \key{versión original} es Sarsa de un solo paso, o Sarsa(0). 
+	
+	\centerline{ $ Q(S_t, A_t) \gets Q(\underline{S_t, A_t}) + \alpha \left( \underline{{\color{red} R_{t+1}}} {\color{red} + \gamma Q (}\underline{{\color{red}S_{t+1}, A_{t+1})}} - Q(S_t, A_t) \right) $}
+	
+	
+	\item  La \textit{versión de n pasos} de Sarsa la llamamos \key{n-step Sarsa}.
+	
+	\begin{itemize}
+		\item  El \key{objetivo} (target) para una actualización arbitraria de n-step es el \key{retorno n-step}:
+		\begin{align*}
+			G_{t:t+1} & \doteq  R_{t+1} + \gamma Q_t(S_{t+1}, A_{t+1}) \\
+			G_{t:t+2} & \doteq  R_{t+1} + \gamma R_{t+2} + \gamma^2 Q_{t+1}(S_{t+2}, A_{t+2}) \\
+			& \cdots  \\
+			{\color{red} G_{t:t+n} } & \doteq R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n {\color{violet} Q_{t+n-1} (S_{t+n}, A_{t+n})},	\text{ para }  n \geq 1 \text{ y } 0 \leq t < T  \\
+			G_{t:t+n} & \doteq G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots + \gamma^{T-t-1} R_T \text{ si } t+n\geq T
+		\end{align*} 
+		
+		\vspace{-0.5cm}
+	
+	
+	
+		\item La \key{fórmula de actualización} es: 
+			{\normalsize $Q_{t+n}(S_t, A_t) = Q_{t+n-1}(S_t, A_t) + \alpha \big( {\color{red} G_{t:t+n}} - Q_{t+n-1}(S_t, A_t) \big)$}
+	
+	\end{itemize}
+	
+	\item \key{n-step Expected SARSA} es la versión de n pasos de Expected Sarsa
+		
+		\begin{itemize}
+			
+			\item  Se redefine el \key{objetivo} (target), llamado \key{retorno n-step}, y se usa fórmula de actualización anterior:
+			
+			{\normalsize $ {\color{red}G_{t:t+n}}  \doteq R_{t+1} + \cdots + \gamma^{n-1} R_{t+n} + \gamma^n {\color{violet} \overline{V}_{t+n-1} (S_{t+n})}, \; t+n < T $}
+			\hfil y \hfil
+			$ G_{t:t+n}  \doteq G_t  \text{ para } t+n \geq T$
+
+				
+			\item[] donde $\ds \overline{V}_{t}(s) \doteq \sum_a \pi(a|s) Q_t(s, a), \quad \forall s \in S.$
+				
+		\end{itemize}
+		
+\end{itemize}
+
+	
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{SARSA de $n$-pasos para estimar $Q\approx q_\pi$}{$Q_{t+n}(S_t, A_t) = Q_{t+n-1}(S_t, A_t) + \alpha \left( {\color{red}G_{t:t+n}} - Q_{t+n-1}(S_t, A_t) \right)$}
+
+		\centering
+		\includegraphics[width=.67\textwidth]{fig/alg_n_step_sarsa}
+		%
+		\raisebox{1cm}{
+		
+	\begin{minipage}{.23\textwidth}\small 
+	Convergencia de \( Q \):
+	
+	\footnotesize
+	\mbox{$
+	\max_s \max_a | Q_{\text{new}}(s, a) - Q_{\text{old}}(s, a) | < \delta
+	$}
+	
+	$
+	\text{max}_s |\pi_{\text{new}}(s) - \pi_{\text{old}}(s)| < \delta
+	$
+	\end{minipage}}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo de SARSA de $n$-pasos}
+	
+	\includegraphics[width=\textwidth]{fig/gridWorld_n_steps_sarsa}
+	
+	\begin{itemize}
+		\item \key{Izquierda:} Un episodio.
+		\item \key{Centro:} SARSA a 1 paso. Solo la última acción de la secuencia de acciones actualiza la recompensa.
+		\item \key{Derecha:} SARSA a 10 pasos. Las últimas 10 acciones de la secuencia de acciones actualizan sus valores. Aprende mucho más rápido en un solo episodio.
+	\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Aprendizaje Off-Policy de $n$ Pasos}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Basado en Muestreo por Importancia}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[label={frame:RecordatorioMC}]{Recordatorio MC}
+	\begin{itemize}
+		\item En \key{Monte Carlo} estudiamos el muestreo por importancia ordinario y ponderado. 
+		
+		\centerline{$\ds 
+		V(s) \doteq \frac{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1} G_t}{|\mathcal{T}(s)|}
+		$
+		\qquad
+		$\ds 
+		V(s) \doteq \frac{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1} G_t}{\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}},
+		$
+		\qquad con $\ds \rho_{t:T(t)-1} \doteq \prod_{k=t}^{T(t)-1} \frac{\pi(A_k | S_k)}{b(A_k | S_k)}$}
+		
+		\item En su momento vimos que las funciones $Q(s,a)$ tienen  un \key{cálculo incremental}:
+		\[  Q(S_t, A_t) \gets Q(S_t, A_t) + \frac{\rho_{t:T(t)-1}}{C(S_t, A_t)}   [G_t -  Q(S_t, A_t)]
+		= Q(S_t, A_t) + \alpha \rho_{t:T(t)-1}  [G_t -  Q(S_t, A_t)] \]		
+
+		\item \key{En métodos de $n$ pasos}, estamos interesados en 
+		
+		\begin{itemize}
+			\item La ganancia para n-pasos: 
+				\begin{itemize}
+					\item $\ds G_{t:t+n} = \underbrace{R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n}}_{(n-1)-recompensas} + \underbrace{\gamma^n FuncionValor}_{Recompensa-Truncada}$, para \( n \geq 1 \) y \( 0 \leq t +n < T \)
+					
+					\item $\ds G_{t:t+n} = G_{t:T}$ si $t+n\geq T$
+				\end{itemize}
+				
+			
+			\item la probabilidad relativa de solo  $n$ acciones. $\ds \rho_{t:\lim} = \prod_{k=t}^{\lim} \frac{\pi(A_k | S_k)}{b(A_k | S_k)}$
+		\end{itemize}
+	\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Aprendizaje Off-Policy de $n$ Pasos}
+	\begin{itemize}
+		\item Definiremos la \key{razón de muestreo de importancia} de tomar las $n$-acciones (desde $t$ hasta $h$):
+		\centerline{$\ds
+			\rho_{t:h} \doteq \prod_{k=t}^{\min(h,T-1)} \frac{\pi(A_k | S_k)}{b(A_k | S_k)}
+			$}
+			
+			\begin{itemize}
+				\item Donde $T$ hace referencia al instante de llegar al estado final.
+			\end{itemize}
+			
+			
+		\item \key{Para valores de estado}, definiremos la función de actualización como
+		
+		\centerline{\normalsize
+			$V_{t+n}(S_t) \doteq V_{t+n-1}(S_t) + \alpha$ \Large $ \color{reddark}\rho_{t:t+n-1} $ \normalsize $\big[G_{t:t+n} - V_{t+n-1}(S_t)\big] \quad 0 \leq t < T$ }
+			
+		\begin{itemize}
+			\item $ {\color{red}G_{t:t+n}}  \doteq R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^{n} {\color{violet}  V_{t+n-1}(S_{t+n})}$
+			\item La {razón de muestreo de importancia} de tomar las $n$ acciones va desde $A_t$ hasta $A_{t+n-1}$
+		\end{itemize}
+
+
+
+ 
+ 
+
+		\item \key{Para valores de acción}, definiremos la función de actualización como
+		 
+		\centerline{\normalsize
+			$Q_{t+n}(S_t, A_t) \doteq Q_{t+n-1}(S_t, A_t) + \alpha$ \Large $\color{reddark} \rho_{t+1:t+n} $ \normalsize $\big[ G_{t:t+n} - Q_{t+n-1}(S_t, A_t) \big], \quad 0 \leq t < T,$ }
+		
+		\begin{itemize}			
+			\item $ {\color{red}G_{t:t+n}}  \doteq R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n {\color{violet} Q_{t+n-1} (S_{t+n}, A_{t+n})}$
+			
+			\item La {razón de muestreo de importancia} de tomar las $n$ acciones va desde $A_t$ hasta $A_{t+n-1}$
+			
+		\end{itemize}
+				
+	
+		\item \key{Si las dos políticas son las mismas}, el ratio de muestreo por importancia es 1.
+		\begin{itemize}
+			\item $V_{t+n}(S_t)$  generaliza la actualización TD de n-pasos.
+			\item $Q_{t+n}(S_t, A_t)$  generaliza la actualización Sarsa de n-pasos.
+		\end{itemize} 
+		
+		\item Para la versión off-policy de \key{n-step Expected Sarsa}:
+			\begin{itemize}
+				\item $ {\color{red}G_{t:t+n}}  \doteq R_{t+1} + \cdots + \gamma^{n-1} R_{t+n} + \gamma^n {\color{violet} \overline{V}_{t+n-1} (S_{t+n})}$ \quad donde  $\overline{V}_{t}(s) \doteq \sum_a \pi(a|s) Q_t(s, a)$. 
+				\item Usará la función $Q$ con {\Large $\color{reddark} \rho_{t+1:t+n-1} $} en lugar de \( \rho_{t+1:t+n} \)
+				
+			\end{itemize}
+		
+%		La versión off-policy de n-pasos Expected Sarsa usaría la misma actualización que la anterior para n-pasos Sarsa, excepto que la razón de muestreo de importancia tendría un factor menos en ella. Es decir, la ecuación anterior usaría \( \rho_{t+1:t+n-1} \) en lugar de \( \rho_{t+1:t+n} \), y, por supuesto, usaría la versión Expected Sarsa del retorno n-pasos (7.7). Esto se debe a que en Expected Sarsa todas las acciones posibles se tienen en cuenta en el último estado; la que realmente se toma no tiene efecto y no es necesario corregirla.
+		
+		
+		
+		
+		
+	\end{itemize}
+	
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{SARSA de $n$-pasos off-policy para estimar $Q\approx q_\pi$}
+	{\small $Q_{t+n}(S_t, A_t) \doteq Q_{t+n-1}(S_t, A_t) + \alpha  \rho_{t+1:t+n} \big[ G_{t:t+n} - Q_{t+n-1}(S_t, A_t) \big]$}
+	
+	\centering
+	\includegraphics[width=.66\textwidth]{fig/alg_off_policy_n_step_sarsa}	
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Sin Muestreo por Importancia}
+
+
+
+
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\begin{frame}{Idea Intuitiva de \textit{n-step Tree Backup Algorithm}}
+	\begin{columns}
+		\begin{column}{.87\textwidth}
+			\begin{itemize}
+				\item ¿Es posible el aprendizaje off-policy sin muestreo de importancia?
+				\item Árbol de respaldo para 3 acciones:
+				\begin{itemize}
+					\item Hay 3 muestras de estados y recompensas, y 2 muestras de acciones
+					\item  Las v.a. representan los \key{eventos que ocurren} \textbf{después} del par inicial estado-acción \( (S_t, A_t) \).
+					\item Colgadas a los lados de cada estado están las \key{acciones que no fueron seleccionadas}. 
+					\item Para el último estado, todas las acciones se consideran como \textit{acciones que no han sido (todavía) seleccionadas}.
+					\begin{itemize}
+						\item Debido a que no tenemos datos de muestra para las acciones no seleccionadas, realizamos \textit{bootstrap} y utilizamos las estimaciones de sus valores para formar el objetivo para la actualización.
+					\end{itemize}
+				\end{itemize}
+				
+				\item  Cada nodo hoja contribuye al objetivo con un peso proporcional a su probabilidad de ocurrir bajo la política objetivo \( \pi \).
+				\begin{itemize}
+					
+					\item Cada acción de primer nivel \( a \) contribuye con un peso de \( \pi(a|S_{t+1}) \).
+					\item La acción realmente tomada, \( A_t \), no contribuye en absoluto. Su probabilidad, \( \pi(A_{t+1}|S_{t+1}) \), se utiliza para ponderar todos los valores de acción del segundo nivel.
+					\item Cada acción de segundo nivel no seleccionada, \( a' \), contribuye con peso \( \pi(A_{t+1}|S_{t+1}) \pi(a'|S_{t+2}) \).
+					\item Cada acción de tercer nivel contribuye con peso \( \pi(A_{t+1}|S_{t+1}) \pi(A_{t+2}|S_{t+2}) \pi(a''|S_{t+3}) \), y así sucesivamente.
+				\end{itemize}
+			\end{itemize}
+		\end{column}
+		%
+		\begin{column}{.12\textwidth}
+			\includegraphics[width=\textwidth]{fig/tree_backup_3_step}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\begin{frame}{Justificación Matemática}
+
+	\begin{itemize}
+		\item El retorno de un solo paso (objetivo) lo vamos a considera igual  que  Expected Sarsa:
+		
+		\centerline{$\ds G_{t:t+1} = R_{t+1} + \gamma \sum_a \pi(a|S_{t+1}) Q_{t}(S_{t+1}, a) \text{ si }  t < T-1$ ;\qquad $G_{T-1:T} = R_{T}$ \text{ si }  t = T-1}
+		
+		\item El retorno de dos pasos es para \( t < T-2 \)
+		
+		\vspace{-0.5cm}
+		
+		{\small
+		\begin{align*}
+			G_{t:t+2} &\doteq R_{t+1} + \gamma {\color{reddark} \sum_{a \neq A_{t+1}} \pi(a \mid S_{t+1}) Q_{t+1}(S_{t+1}, a)}
+			    + \gamma {\color{ForestGreen} \pi(A_{t+1} \mid S_{t+1}) }  \left( R_{t+2} + \gamma \sum_{a} \pi(a \mid S_{t+2}) Q_{t+1}(S_{t+2}, a) \right) \\
+			&= R_{t+1} + \gamma {\color{reddark} \sum_{a \neq A_{t+1}} \pi(a \mid S_{t+1}) Q_{t+1}(S_{t+1}, a)}
+			 + \gamma {\color{ForestGreen} \pi(A_{t+1} \mid S_{t+1}) } {\color{black} G_{t+1:t+\mbf{2}}},
+		\end{align*}
+		}
+		
+		\item El retorno para  n-pasos, $t < T-1,  n \geq 2$:
+		
+		\centerline{$\ds G_{t:t+n} \doteq R_{t+1} + \gamma {\color{reddark} \sum_{a \neq A_{t+1}} \pi(a|S_{t+1}) Q_{t+n-1}(S_{t+1}, a)} + \gamma {\color{ForestGreen} \pi(A_{t+1}|S_{t+1}) } {\color{black} G_{t+1:t+\mbf{n}}}$}
+		
+		\item Regla de actualización de valor-acción de n-pasos Sarsa:
+		
+		\centerline{\large $\ds	Q_{t+n}(S_t, A_t) \doteq Q_{t+n-1}(S_t, A_t) + \alpha \left[ G_{t:t+n} - Q_{t+n-1}(S_t, A_t) \right], $}\vspace{0.25cm}
+		
+		para \( 0 \leq t < T \), mientras que los valores de todos los demás pares estado-acción permanecen sin cambios: \( Q_{t+n}(s, a) = Q_{t+n-1}(s, a) \), para todos \( s, a \) tales que \( s \neq S_t \) o \( a \neq A_t \).
+		
+	\end{itemize}
+	
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Árbol de Respaldo de $n$-pasos para estimar $Q\approx q_\pi$}
+	{\small $Q_{t+n}(S_t, A_t) \doteq Q_{t+n-1}(S_t, A_t) + \alpha  \big[ G_{t:t+n} - Q_{t+n-1}(S_t, A_t) \big]$}
+	
+	
+	
+	
+	\begin{columns}
+		\begin{column}{.87\textwidth}
+			\centering
+			\includegraphics[width=.7\textwidth]{fig/alg_n_step_tree_backup}	
+		\end{column}
+		%
+		\begin{column}{.10\textwidth}
+			\includegraphics[width=\textwidth]{fig/tree_backup_3_step}
+		\end{column}
+	\end{columns}
+
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Referencias}
+
+
+
+% Redefinimos la apariencia
+%\setbeamertemplate{headline}{}
+%\setbeamertemplate{frametitle}{\vskip 0.5cm	\small{\textbf{\insertframetitle}}}
+%\setbeamertemplate{footline}{}
+
+
+
+
+
+
+% Mostramos la bibliografía
+% \begin{frame}[allowframebreaks] %% Si ocupa más de una página
+	%\begin{frame}[allowframebreaks]{Referencias -} %% Si hay sólo una página
+	
+	\begin{frame}{Referencias} %% Si hay sólo una página
+		\nocite{Sutton2018, silver2015, Hado2018Lecture3}
+		
+		% \vskip -5cm %% Para ajustar la distancia al comienzo	
+		%\bibliography{references}	
+		\printbibliography[heading=none]
+	\end{frame}    
+	
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+
+
+
