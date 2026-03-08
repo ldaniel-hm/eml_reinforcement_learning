@@ -1,0 +1,591 @@
+%% Ejemplo de la plantilla de latex para las diapositivas del Máster en IA 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Valores para el ratio de aspecto: 43, 169 
+%\documentclass[10pt, envcountsect, presentation, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+\documentclass[10pt, envcountsect, handout, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Incluir fichero de estilo del máster
+\input ../style/plantillaMasterIA.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\addbibresource{../references.bib}
+
+
+
+%\setbeameroption{show only notes} % Only notes
+%\setbeameroption{show notes on second screen=right}  % Both
+%\setbeamertemplate{note page}[compress]
+\setbeameroption{hide notes} % Only slides
+
+
+
+
+\renewcommand*\footnoterule{}
+\setbeamerfont{footnote}{size=\tiny}
+
+
+
+
+%\input{embed_video.tex}
+%\usepackage{movie15}b
+\usepackage{multimedia}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Información que aparecerá en la portada
+\title[Aprendizaje por Refuerzo]{Aprendizaje por Refuerzo}
+\subtitle{Métodos Basados en el Gradiente de la Política} % short title for footer
+
+\author[L. D. Hernández] % Para el pie de página, poner los autores abreviados separados por comas.
+{%
+	\sc{Luis Daniel Hernández Molinero }\\ % Autor 1
+	\textit{Ciencia de la Computación e Inteligencia Artificial}\\  % Area de conocimiento
+	\textit{Dept. Ingeniería de la Información y las Comunicaciones}\\  % Departamento
+	\\   % No dejes espacio entre esta línea y la llave siguiente 
+}
+
+\institute[DIIC]% % Poner las iniciales de los diferentes departamentos de los autores separadas por comas.
+{
+	\textit{Universidad de Murcia}
+}
+
+\newcounter{lastyear}
+\setcounter{lastyear}{\the\year}
+\addtocounter{lastyear}{-1}
+
+\date{\arabic{lastyear} / \the\year} % Curso académico
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Contenido de las diapositivas
+\setbeamerfont{normal text}{size=\normalsize} % Modifica el tamaño del texto de las diapositivas.
+\AtBeginDocument{\usebeamerfont{normal text}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Índice de Contenidos}
+	\tableofcontents 
+	
+\note{
+
+}
+
+\end{frame}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Introducción}
+	\begin{itemize}
+		\item Aquí consideramos métodos que aprenden una \key{política parametrizada} que puede seleccionar acciones \textbf{sin consultar una función de valor}.
+		\begin{itemize}
+			\item Una función de valor aún puede usarse para aprender el parámetro de la política, pero no es necesaria para la selección de acciones.
+		
+			\item Usamos la notación $\bm{\theta} \in \mathbb{R}^{d'}$ para el vector de \key{parámetros de la política}.
+			
+			\item $\pi(a|s, \bm{\theta}) = \Pr\{A_t = a \mid S_t = s, \bm{\theta}_t = \bm{\theta}\}$ es la probabilidad de que se tome la acción $a$ en el tiempo $t$, dado que el entorno está en el estado $s$ en el tiempo $t$ \textbf{con el parámetro} $\bm{\theta}$.
+			
+			\item Si un método también utiliza una función de valor aprendida, entonces el \key{vector de pesos de la función de valor} se denota como $\mathbf{w} \in \mathbb{R}^d$, como en $\hat{v}(s, \mathbf{w})$.
+			
+			\begin{itemize}
+				\item Los métodos que aprenden aproximaciones tanto para la política como para las funciones de valor a menudo se denominan \key{métodos actor-crítico}, donde el \textbf{actor} se refiere a la política aprendida y el \textbf{crítico} se refiere a la función de valor aprendida, usualmente una función de valor-estado.
+			\end{itemize}
+		\end{itemize}
+
+		\item Aprenderemos el parámetro de la política \textbf{basados en alguna \key{ medida escalar de rendimiento} $J(\bm{\theta})$} tal que
+		
+		\centerline{$\pi^{opt}= \arg \max_{\bm{\theta}} J(\bm{\theta})$}
+		
+		\item \cite{sutton1999policy} introducen los \key{métodos de gradiente de política} como las que buscan maximizar el rendimiento mediante actualizaciones que aproximan el ascenso por gradiente en $J$:
+		\[
+		\bm{\theta}_{t+1} = \bm{\theta}_t + \alpha \widehat{\nabla J(\bm{\theta}_t)}
+		\]
+		donde $\widehat{\nabla J(\bm{\theta}_t)} \in \mathbb{R}^{d'}$ es una \key{estimación estocástica} cuya \textbf{expectativa aproxima el gradiente} de la medida de rendimiento.
+		
+	\end{itemize}
+	
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: Un Pasillo muy corto con Acciones Invertidas}
+	
+	\centerline{\includegraphics[width=.8\textwidth]{fig/fig_short_corridor.png}}
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fundamentos de los Métodos del Gradiente de la Política}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Cómo Obtener la Política}
+	
+	\begin{itemize}
+		\item La política puede parametrizarse siempre que:
+			\begin{itemize}
+				\item  $\nabla \pi(a|s, \bm{\theta})$ \key{debe existir y ser finito} para todos $s \in \mathcal{S}, a \in \mathcal{A}(s)$, y $\bm{\theta} \in \mathbb{R}^{d'}$
+				\item $\pi(a|s, \bm{\theta}) \in (0, 1)$ para que \key{nunca se vuelva determinística}.
+			\end{itemize}
+		\item Se define un \key{sistema de preferencias parametrizada} con $h(s,a,\bm{\theta})$ sobre cada par estado-acción (\key{finito}).
+			\begin{itemize}
+				\item Si es \textit{pequeño}, lo establece el usuario para cada par $(s,a)$.
+				\item Alternativamente usando \key{funciones de aproximación parametrizada}:
+					\begin{itemize}
+						\item \textbf{Representación lineal:} $ h(s,a,\bm{\theta}) = \bm{\theta}^\top \mathbf{x}(s, a) \in\mathbb{R}^{d'}$, para características $\mathbf{x}$
+						\item \textbf{Redes neuronales:}  $ h(s,a,\bm{\theta}) = NN(s, a, \bm{\theta})$
+						\item \textbf{Funciones separables: } $ h(s,a,\bm{\theta}) =  f_1(s,\bm{\theta}) +  f_2(a,\bm{\theta})$
+					\end{itemize}
+			\end{itemize}
+			
+		\item Se define la política como una \key{soft-max en preferencias de acción}: $\ds \pi(a|s, \bm{\theta}) \doteq \frac{e^{h(s,a,\bm{\theta})}}{\sum_b e^{h(s,b,\bm{\theta})}}. $
+		
+		\begin{itemize}
+			\item El soft-max en preferencias de acción permite que la política aproximada converja a una \key{política determinista}, algo que no ocurre con la selección $\varepsilon$-codiciosa.
+
+			\item El soft-max facilita la selección de acciones con \key{probabilidades arbitrarias}, crucial para problemas donde la política óptima es inherentemente estocástica, como en el póker. 
+			
+			\begin{itemize}
+				\item Los métodos basados en valores de acción no encuentran políticas estocásticas óptimas de forma natural, pero los métodos de aproximación de políticas sí lo logran.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{itemize}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Función de Desempeño}{Y su optimización}
+	
+%	\includegraphics[width=\textwidth]{fig/}
+	
+	\begin{itemize}
+		\item La \key{función de desempeño} $J(\bm{\theta})$  resume el desempeño global de la política (en términos de recompensas):
+		\begin{enumerate}
+			\item \key{Recompensa acumulada esperada desde un estado inicial:}
+			$ \ds 
+			J(\bm{\theta}) \doteq v_{\pi_{\bm{\theta}}} (s_0) = \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^\infty \gamma^t r(s_t, a_t) \right],
+			$
+			
+%			\begin{itemize}
+%				\item 
+				- \( \tau \) es una trayectoria generada por la política \( \pi_\theta \),
+%				\item 
+				- \( \gamma \) es el factor de descuento, \\
+%				\item
+				 - \( r(s_t, a_t) \) es la recompensa inmediata en el tiempo \( t \).
+%			\end{itemize}
+			\item \key{Recompensa promedio por paso} (para entornos ergódicos):
+			$\ds
+			J(\bm{\theta}) \doteq r(\pi_{\bm{\theta}}) = \lim_{T \to \infty} \frac{1}{T} \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^T r(s_t, a_t) \right].
+			$
+		\end{enumerate}
+		
+
+		
+		\item \key{Teorema del gradiente de política}: \hfil 
+		\fbox{$\ds
+			\nabla J(\bm{\theta}) \propto \sum_s \mu(s) \sum_a q_{\pi}(s, a) \nabla \pi(a|s, \bm{\theta})
+		$}
+
+		\begin{itemize}
+			\item Es un valor esperado respecto de $\mu(s)$. Podemos hacer muestreo.
+		\end{itemize}		
+		
+		\item  \key{Método \textit{all-actions}}
+		\begin{itemize}
+		
+		\item  De acuerdo al \textbf{teorema del gradiente}, $\nabla J(\bm{\theta}) \propto \ds H(\bm{\theta}) = \mathbb{E}_\pi \left[ \sum_a q_{\pi}(S_t, a) \nabla \pi(a|S_t, \bm{\theta}) \right].$
+		
+		\item De acuerdo a la \textbf{actualización por ascenso del gradiente}:
+		{$\ds
+			\bm{\theta}_{t+1} \doteq \bm{\theta}_t + \alpha \sum_a  \hat{q}(S_t, a, \mathbf{w}) \nabla \pi(a|S_t, \bm{\theta}),
+			$}			
+			\begin{itemize}
+				\item Pues {$
+					\bm{\theta}_{t+1} = \bm{\theta}_t + \alpha \widehat{\nabla J(\bm{\theta}_t)}
+					$  \qquad donde $\widehat{\nabla J(\bm{\theta}_t)} \in \mathbb{R}^{d'}$ es una estimación.}
+			\end{itemize}
+		\end{itemize}
+			
+			
+	\end{itemize}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{REINFORCE}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Algoritmos REINFORCE}
+
+	\begin{itemize}
+		\item Partimos de dos resultados:
+		\begin{itemize}
+			 \item \key{Teorema del gradiente de política} \citep{Sutton2001ComparingPA}.
+		
+		\centerline{$\ds
+			\nabla J(\bm{\theta}) \propto \sum_s \mu(s) \sum_a q_{\pi}(s, a) \nabla \pi(a|s, \bm{\theta}) = H(\bm{\theta})
+			$}
+		
+		
+		
+		\item El método de gradiente de la política que  \key{actualiza por ascenso del gradiente}:
+		
+		\centerline{$
+			\bm{\theta}_{t+1} = \bm{\theta}_t + \alpha \widehat{\nabla J(\bm{\theta}_t)}
+			$  \qquad donde $\widehat{\nabla J(\bm{\theta}_t)} \in \mathbb{R}^{d'}$ es una estiamación.}
+		
+		\end{itemize}	
+			
+		
+		\item \key{REINFORCE}
+		
+			$
+			\begin{array}{rl}
+				H(\bm{\theta}) & \ds  = \mathbb{E}_\pi \left[ \sum_a \frac{\pi(a|S_t, \bm{\theta}) q_{\pi}(S_t, a) \nabla \pi(a|S_t, \bm{\theta})}{\pi(a|S_t, \bm{\theta})} \right] 
+				= \mathbb{E}_\pi \left[ q_{\pi}(S_t, A_t) \frac{\nabla \pi(A_t|S_t, \bm{\theta})}{\pi(A_t|S_t, \bm{\theta})} \right] \\
+				 & \qquad  \ds = \mathbb{E}_\pi \left[ \mathbb{E}_\pi[G_t|S_t, A_t] \frac{\nabla \pi(A_t|S_t, \bm{\theta})}{\pi(A_t|S_t, \bm{\theta})} \right] =  {\color{reddark} \mathbb{E}_\pi \left[ G_t \frac{\nabla \pi(A_t|S_t, \bm{\theta})}{\pi(A_t|S_t, \bm{\theta})} \right]} 
+			\end{array}
+			$
+			
+				\begin{itemize}
+			
+			\item De acuerdo a la \key{actualización por ascenso del gradiente}:
+			{$\color{blue!40!black}  \ds \bm{\theta}_{t+1} = \bm{\theta}_t + \alpha G_t \frac{\nabla \pi(A_t|S_t, \bm{\theta}_t)}{\pi(A_t|S_t, \bm{\theta}_t)}$}
+		\end{itemize}
+		
+		
+		\item \key{REINFORCE con Baseline}
+		
+		$
+		\begin{array}{rl}
+			H(\bm{\theta}) & = \ds  \sum_s \mu(s) \sum_a (q_{\pi}(s, a)-b(s)) \nabla \pi(a|s, \bm{\theta}) 
+			= {\color{reddark} \mathbb{E}_\pi \left[ (G_t - b(S_t) ) \frac{\nabla \pi(A_t|S_t, \bm{\theta})}{\pi(A_t|S_t, \bm{\theta})} \right]}  \\
+			&   \color{black} \text{ porque }\sum_a b(s) \nabla \pi(a|s, \bm{\theta}) = b(s) \nabla \sum_a \pi(a|s, \bm{\theta}) = b(s) \nabla 1 = 0.  \\
+		\end{array}
+		$
+		
+		
+		\begin{itemize}
+			\item De acuerdo a la \key{actualización por ascenso del gradiente}:
+			{$\color{blue!40!black} \ds \bm{\theta}_{t+1} = \bm{\theta}_t + \alpha (G_t - b(S_t) )  \frac{\nabla \pi(A_t|S_t, \bm{\theta}_t)}{\pi(A_t|S_t, \bm{\theta}_t)}$}
+		\end{itemize}
+		
+		
+		
+	\end{itemize}
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{REINFORCE}{Un Algoritmo Monte Carlo}
+	%{Sarsa n-pasos Semi-Gradiente Episódico  $\hat{q} \approx q_0$}
+	
+	
+	\centerline{\includegraphics[width=.9\textwidth]{fig/alg_reinforce_MC}}
+
+	$ $\hspace{3.0cm} \begin{minipage}{.6\textwidth}
+		\begin{itemize}
+		\item Fórmula anterior: $\ds \bm{\theta}_{t+1} = \bm{\theta}_t + \alpha G_t \frac{\nabla \pi(A_t|S_t, \bm{\theta}_t)}{\pi(A_t|S_t, \bm{\theta}_t)}$
+				
+		\item Modificaciones en el psedocódigo:
+		
+			\begin{itemize}
+				\item Se incluyen los descuentos $\gamma$ antes de $G_0$
+				\item $\ds \nabla \ln \pi(a|s, \theta) = \frac{\nabla  \pi(a|s, \theta)}{ \pi(a|s, \theta) }$
+			\end{itemize}
+			
+		\item Al ser Monte Carlo tendrá varianza alta y aprendizaje lento.
+	\end{itemize}
+	\end{minipage}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{REINFORCE con Baseline}
+	%{Sarsa n-pasos Semi-Gradiente Episódico  $\hat{q} \approx q_0$}
+	
+	
+	\centerline{\includegraphics[width=.85\textwidth]{fig/alg_reinforce_baseline}}
+	
+	$ $\hspace{3cm} \begin{minipage}{.7\textwidth}
+		\begin{itemize}
+			\item Fórmula anterior: $\ds \bm{\theta}_{t+1} = \bm{\theta}_t + \alpha (G_t-b(S_t)) \frac{\nabla \pi(A_t|S_t, \bm{\theta}_t)}{\pi(A_t|S_t, \bm{\theta}_t)}$
+						
+			\item Modificaciones en el psedocódigo:
+			\begin{itemize}
+				\item Se incluyen los descuentos $\gamma$
+				y $\ds \nabla \ln \pi(a|s, \theta) = \frac{\nabla  \pi(a|s, \theta)}{ \pi(a|s, \theta) }$
+			\end{itemize}
+		\end{itemize}
+	\end{minipage}
+	
+	\TPMargin{0mm}%
+	\begin{textblock}{9}(7.5, 9.4) \small
+		\color{blue}
+		$
+		\longleftarrow \quad G_t - b(t) = G_t - v_\pi(S_t) %A_\pi(S_t,A_t) \;\doteq\; q_\pi(S_t,A_t) \;-\; v_\pi(S_t)
+		$\\
+		$
+		\longleftarrow \quad \alpha^{\mathbf{w}} \doteq \tau  / \mathbf{x}(S_t)^\top \mathbf{x}(S_t)
+		$\\
+		$
+		\longleftarrow \quad \alpha^{\mathbf{\theta}} = \ ??
+		$
+	\end{textblock}
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo Comparativo}
+	
+\includegraphics[width=.6\textwidth]{fig/fig_reinforce_mc}
+	
+	{\includegraphics[width=.3\textwidth, trim=370 100 60 150,clip]{fig/fig_short_corridor.png}}
+		
+%	
+		\TPMargin{0mm}%
+	\begin{textblock}{9.75}(6.2, 8) \small
+		\includegraphics[width=\textwidth]{fig/fig_reinforce_baseline}
+	\end{textblock}
+	
+\end{frame}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Métodos Actor–Crítico}
+
+
+
+\begin{frame}{Métodos Actor-Crítico}
+	\begin{itemize}
+		\item REINFORCE con Baseline es un método que aprende aproximaciones tanto para la política, $\widehat{\pi}(\bm{\theta})$, como para la función de valor, $\widehat{v}(S_t, \mathbf{w})$, usando Monte Carlo, $G_t$.
+		
+			\begin{itemize}
+				\item Usa como base una estimación del valor del estado $\widehat{v}(S_t, \mathbf{w})$
+				\item Usa el \textit{error} $\delta \gets G_t-\widehat{v}(S_t, \mathbf{w})$ para hacer una estimación del los parámetros $\mathbf{w}$ y $\bm{\theta}$
+				\item No evalúa directamente la acción tomada.
+			\end{itemize}
+
+		\item La \key{función ventaja} nos ayuda a \textbf{criticar} la acción: $A_\pi(s,a)=q_\pi(s,a)-v_\pi(s)=\mathbb{E}[r+v_\pi(s')] - v_\pi(s)$
+		\begin{itemize}
+			\item Error TD es un buen estimador: $A(s,a)=r+\gamma V(s')-V(s)$
+		\end{itemize}
+		
+		\item Un \key{Actor-Crítico} consta de dos componentes:
+			\begin{itemize}
+				\item \key{Actor:} El modelo que se encarga de tomar una acción, $A_t\sim\pi(\cdot|S_t,\bm{w})$.
+				\item \key{Crítico:} La función de valor que se aplica \textbf{tanto al estado inicial como al estado siguiente} de la transición.
+					\begin{itemize}
+						\item Evalúa el estado actual: $\widehat{v}(S_t, \mathbf{w})$ \hfill \key{¿La acción que tomó el actor fue buena?}
+						\item Evalúa directamente la acción tomada utilizando el retorno que produce en un paso.
+						$G_{t:t+1}=R_{t+1} + \gamma  \widehat{v}(S_{t+1}, \mathbf{w})$
+					\end{itemize}
+			\end{itemize}
+			
+		\item Actor-crítico usa el \textit{error} $\delta_t \gets G_{t:t+1}-\widehat{v}(S_t, \mathbf{w})$ para hacer una estimación del los parámetros $\mathbf{w}$ y $\bm{\theta}$.
+		
+		\item Los métodos A-C de un solo paso, \textbf{son análogos a} los métodos TD 
+		como TD(0), Sarsa(0) y Q-learning.
+		
+		\item \key{Características} de los métodos actor-crítico:
+			\begin{itemize}
+				\item Son \emph{bootstrapping}
+				\item Son totalmente e\textbf{n línea}  e incrementales.
+				\item \textit{Introducen} sesgo, pero \textit{reducen} la varianza y \textit{acelera} el aprendizaje.
+				\item Se pueden \textbf{generalizar} a $n$-pasos
+			\end{itemize}
+		
+%		El sesgo introducido mediante \emph{bootstrapping} y la dependencia en la representación 
+%		del estado suele ser beneficioso porque reduce la varianza y acelera el aprendizaje.
+%		
+%		\item Para obtener estas ventajas en el caso de métodos de gradiente de política, 
+%		utilizamos métodos actor-crítico con un \emph{crítico de bootstrapping}.
+%		
+%		\item Consideramos 
+	\end{itemize}
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Actor-Crítico de un paso (episódico)}
+	
+	\centerline{\includegraphics[width=.95\textwidth]{fig/alg_one_step_actor_critic}}
+	
+%	{\includegraphics[width=.3\textwidth, trim=370 100 60 150,clip]{fig/fig_short_corridor.png}}
+%	
+%	%	
+%	\TPMargin{0mm}%
+%	\begin{textblock}{9.75}(6.2, 8) \small
+%		\includegraphics[width=\textwidth]{fig/fig_reinforce_baseline}
+%	\end{textblock}
+	
+
+	
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Algunas Variantes del Actor-Crítico} \nocite{weng2018policy}
+	\begin{description}
+		\item[Actor Crítico de n-pasos] (n-step Actor-Critic) \citep{Sutton2018}
+		\begin{itemize}
+			\item Extensión natural del Actor-Crítico de un paso.
+			\item En lugar de usar la recompensa de un único paso y el valor estimado, se usan $n$ pasos de experiencia.
+			
+		\end{itemize}
+
+		\item [Asynchronous Advantage Actor-Critic (A3C)] \citep{mnih2016asynchronous}
+		\begin{itemize}
+			\item Varios hilos (workers) corren en paralelo (de forma \emph{asincrónica}), cada uno con su propia copia de la política (actor) y el crítico (función de valor).
+			\item Cada worker interactúa con \emph{su propio entorno}, generando estados, acciones y recompensas de forma independiente.
+				\begin{itemize}
+					\item Cada uno tiene sus parámetros locales: $\mathbf{w}_{local}$, $\bm{\theta}_{local}$
+				\end{itemize}
+			\item Se actualizan los parámetros globales de forma asíncrona.
+				\begin{itemize}
+					\item $\bm{\theta}_{\text{global}} \leftarrow \bm{\theta}_{\text{global}} + \alpha \Delta \bm{\theta}_{\text{local}}$
+					\qquad
+					$\mathbf{w}_{\text{global}} \leftarrow \mathbf{w}_{\text{global}} + \beta \Delta \mathbf{w}_{\text{local}}$
+				\end{itemize}
+			\item Sincroniza nuevamente los parámetros locales con los globales:
+				\begin{itemize}
+					\item $\bm{\theta}_{\text{local}} \leftarrow \bm{\theta}_{\text{global}}$
+					\qquad
+					$\mathbf{w}_{\text{local}} \leftarrow \mathbf{w}_{\text{global}}$
+				\end{itemize}
+		\end{itemize}
+%		 Obtuvo buenos resultados en múltiples tareas de Atari.
+
+		\item[Advantage Actor-Critic (A2C)] ~
+		\begin{itemize}
+			\item A2C es la versión \textbf{síncrona} de A3C: varios trabajadores recolectan experiencias y actualizan la red de forma sincronizada.
+			\item Todos los workers realizan $N$-pasos y actualizan los parámetros globales a partir de todos los parámetros locales.
+			
+			\begin{itemize}
+				\item $\bm{\theta}_{global} \leftarrow \bm{\theta}_{global} + \alpha \frac{1}{N} \sum_{i=1}^N \Delta \bm{\theta}^{(i)},$
+				\qquad  $\mathbf{w}_{global} \leftarrow \mathbf{w}_{global} + \beta \frac{1}{N} \sum_{i=1}^N \Delta \mathbf{w}^{(i)}.$
+			\end{itemize}
+		\end{itemize}
+		
+	\end{description}
+\end{frame}
+
+
+
+% Gradiente Natural
+%   https://www.academia.edu/5990872/Natural_Gradient_Works_Efficiently_in_Learning
+% https://towardsdatascience.com/its-only-natural-an-excessively-deep-dive-into-natural-gradient-optimization-75d464b89dbb
+% https://towardsdatascience.com/an-intuitive-explanation-of-gradient-descent-83adf68c9c33
+% https://yorkerlin.github.io/posts/2021/11/Geomopt04/
+% https://yorkerlin.github.io/img/sphere.png
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Referencias}
+
+
+
+% Mostramos la bibliografía
+% \begin{frame}[allowframebreaks] %% Si ocupa más de una página
+%\begin{frame}[allowframebreaks]{Referencias -} %% Si hay sólo una página
+	
+	\begin{frame}{Referencias} %% Si hay sólo una página
+		\nocite{Sutton2018, silver2015, Hado2018Lecture3}
+		
+		% \vskip -5cm %% Para ajustar la distancia al comienzo	
+		%\bibliography{references}	
+		\printbibliography[heading=none]
+	\end{frame}    
+	
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+
+
+
