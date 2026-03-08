@@ -1,0 +1,848 @@
+%% Ejemplo de la plantilla de latex para las diapositivas del Máster en IA 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Valores para el ratio de aspecto: 43, 169 
+%\documentclass[10pt, envcountsect, presentation, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+\documentclass[10pt, envcountsect, handout, aspectratio=1610, hyperref={hypertexnames=true}]{beamer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Incluir fichero de estilo del máster
+\input ../style/plantillaMasterIA.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\addbibresource{../references.bib}
+
+
+
+%\setbeameroption{show only notes} % Only notes
+%\setbeameroption{show notes on second screen=right}  % Both
+%\setbeamertemplate{note page}[compress]
+\setbeameroption{hide notes} % Only slides
+
+
+
+\renewcommand*\footnoterule{}
+\setbeamerfont{footnote}{size=\tiny}
+
+
+
+
+%\input{embed_video.tex}
+%\usepackage{movie15}b
+\usepackage{multimedia}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Información que aparecerá en la portada
+\title[Aprendizaje por Refuerzo]{Aprendizaje por Refuerzo}
+\subtitle{Control con Aproximaciones} % short title for footer
+
+\author[L. D. Hernández] % Para el pie de página, poner los autores abreviados separados por comas.
+{%
+	\sc{Luis Daniel Hernández Molinero }\\ % Autor 1
+	\textit{Ciencia de la Computación e Inteligencia Artificial}\\  % Area de conocimiento
+	\textit{Dept. Ingeniería de la Información y las Comunicaciones}\\  % Departamento
+	\\   % No dejes espacio entre esta línea y la llave siguiente 
+}
+
+\institute[DIIC]% % Poner las iniciales de los diferentes departamentos de los autores separadas por comas.
+{
+	\textit{Universidad de Murcia}
+}
+
+
+
+\newcounter{lastyear}
+\setcounter{lastyear}{\the\year}
+\addtocounter{lastyear}{-1}
+
+\date{\arabic{lastyear} / \the\year} % Curso académico
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Contenido de las diapositivas
+\setbeamerfont{normal text}{size=\normalsize} % Modifica el tamaño del texto de las diapositivas.
+\AtBeginDocument{\usebeamerfont{normal text}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Índice de Contenidos}
+	\tableofcontents 
+	
+\note{
+
+}
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Introducción}
+	
+	\begin{itemize}
+		\item En problemas reales hay \key{altas dimensiones} en el espacio de estados.
+			\begin{itemize}
+				\item \textbf{Métodos tabulares son ineficientes} para problemas de gran escala.
+				\item Necesidad de representar funciones de valor y políticas de manera compacta.
+			\end{itemize}
+			
+		~
+		
+		\item \key{En Predicción:}
+			\begin{itemize}
+				\item El \textbf{objetivo} es construir $\hat{v}(s, \mathbf{w}) \approx v_\pi(s)$ para el valor aproximado del estado $s$ dado el vector de pesos $\mathbf{w}\in \mathbb{R}^d$
+				
+				\item Y que minimice el \key{Error Cuadrático Medio de Valor},
+					$$
+				\overline{\text{VE}}(\mathbf{w}) \doteq \sum_{s \in S} \mu(s) \left[ v_\pi(s) - \hat{v}(s, \mathbf{w}) \right]^2
+				     \text{\color{black} para la \key{distribución de estados} } \mu(s).$$
+				     
+    			\item Lo resolvemos con  \key{gradiente estocástico} tomando ejemplos $S_t \rightarrow U_t$:
+				    
+				    \centerline{$
+				    	\mathbf{w}_{t+1} \doteq \mathbf{w}_t + \alpha \left[ U_t - \hat{v}(S_t, \mathbf{w}_t) \right] \nabla \hat{v}(S_t, \mathbf{w}_t)
+				    	$}
+				
+				~
+				
+				\item Y por  \key{métodos de semi-gradiente} tomando ejemplos $S_t \rightarrow U_t(\mathbf{w})$.
+%
+			\end{itemize}
+			
+		~
+		
+		\item \key{En Control:}
+		
+			\begin{itemize}
+				\item El \textbf{objetivo} es construir un función valor de acción, $\hat{q}(s, a,  \mathbf{w})  \approx q_\pi(s, a)$ donde $\mathbf{w} \in \mathbb{R}^d$ es un vector de pesos.
+
+				\item Ahora tomaremos ejemplos de la forma $S_t, A_t \rightarrow U_t$.
+
+				\item Veremos algunas alternativas.
+			\end{itemize}
+	
+	\end{itemize}
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Control Semi-Gradiente Episódico}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Control Semi-Gradiente Episódico On-Policy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Sarsa Semi-Gradiente Episódico}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Control Semi-Gradiente Episódico}
+	
+\scalebox{1.1}{
+\begin{minipage}{0.90\textwidth}
+		\begin{itemize}
+		\item La actualización general de \key{descenso de gradiente estocástico} para la predicción del valor de acción es:
+		
+		\centerline{$
+		\mathbf{w}_{t+1} \doteq \mathbf{w}_t + \alpha \left[ U_t - \hat{q}(S_t, A_t, \mathbf{w}_t) \right] \nabla \hat{q}(S_t, A_t, \mathbf{w}_t). $}
+		
+		~
+		
+		tomando ejemplos de la forma $S_t, A_t \rightarrow U_t$.
+		
+		~
+		
+		\item Episódico \key{gradiente Monte Carl}o: $U_t=G_t$
+		
+		\item Episódico \key{semi-gradiente Sarsa de un paso}: $U_t = R_{t+1} + \gamma \hat{q}(S_{t+1}, A_{t+1}, \mathbf{w}_t)$
+			\begin{itemize}
+				\item Se puede generalizar a $n$-pasos.
+			\end{itemize}
+			
+		
+		
+		\item Seguimos aplicando el enfoque de \key{Iteración de Políticas Generalizada}. Si es on-policy:
+			\begin{itemize}
+				\item Debemos hacer una estimación del valor $\hat{q}_\pi(S_t,a, \mathbf{w}_t)$
+				\item\key{Mejoramos la política}:
+					\begin{itemize}
+					\item Para cada posible acción en un estado $S_t$ seleccionamos la acción greedy: $\ds A_{t+1} = \arg\max_a \hat{q}(S_{t+1}, a, \mathbf{w}_t)$.
+					\item La mejora de la política se consigue con una  política soft sobre la política greedy (p.e. una  $\epsilon$-greedy).
+					\end{itemize} 
+			\end{itemize}
+	\end{itemize}
+\end{minipage}
+}
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Sarsa semi-gradiente episódico para estimar $\hat{q} \approx q_0$}
+
+	\centerline{\includegraphics[width=\textwidth]{fig/alg_episodic_semi_gradient_sarsa}}
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: \textit{Mountain Car Task} - I}
+
+\begin{columns}
+	\begin{column}{.55\textwidth}
+		\begin{itemize}
+			\item \key{La única forma de llegar} es acelerar al máximo desde la pendiente izquierda y con la inercia llegar al objetivo.
+			\item La \key{recompensa} en este problema es de \(-1\) en todos los pasos de tiempo hasta que el coche alcance su posición objetivo en la cima de la montaña, lo que termina el episodio.
+			\item Hay \key{tres acciones} posibles:
+			\begin{itemize}
+				\item Aceleración completa hacia adelante (\(+1\)).
+				\item Aceleración completa hacia atrás (\(-1\)).
+				\item Sin aceleración (\(0\)).
+			\end{itemize}
+			\item Cada episodio \key{comienza} desde una posición aleatoria \(x_t \in [-0.6, -0.4]\) y con velocidad cero.
+			\item El coche se mueve de acuerdo con una \key{física simplificada}.
+		\end{itemize}
+	\end{column}
+	%
+	\begin{column}{.35\textwidth}
+%					\centerline{\includegraphics[width=\textwidth, trim=455 0 0 0, clip]{fig/fig_mc_tree_search}}
+		\includegraphics[width=\textwidth, trim=0 310 565 0, clip]{fig/fig_mountain_car} 
+
+	\end{column}
+\end{columns}
+\begin{align*}
+	x_{t+1} &\doteq \text{bound}\left(x_t + \dot{x}_t + 1\right) \Rightarrow -1.2 \leq x_{t+1} \leq 0.5 \\
+	\dot{x}_{t+1} &\doteq \text{bound}\left(\dot{x}_t + 0.001 A_t - 0.0025 \cos(3x_t)\right) \Rightarrow -0.07 \leq \dot{x}_{t+1} \leq 0.07
+\end{align*}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: \textit{Mountain Car Task} - II}
+	
+
+	
+\scalebox{1.1}{\begin{minipage}{0.8\textwidth}
+	\begin{itemize}
+	\item El \key{espacio de estados es continuo} y bidimensional (posición y velocidad).
+	\item Se utilizaron \key{8 recubrimientos} (\textbf{tilings}), con cada recubrimiento cubriendo \( 1/8 \) de la distancia limitada en cada dimensión, y con desplazamientos asimétricos.
+	
+	\item Los vectores de características \( x(s, a) \), creados mediante \key{codificación por recubrimientos} (\textbf{tile coding}), se combinaron \key{linealmente} con el vector de parámetros para aproximar la función de valor-acción:
+	$\ds
+	\hat{q}(s, a, \mathbf{w}) = \mathbf{w}^\top \mathbf{x}(s, a) = \sum_{i=1}^d w_i \cdot x_i(s, a),
+	$
+	donde:
+	
+
+\end{itemize}
+\end{minipage}}
+
+\begin{columns}
+	\begin{column}{.4\textwidth}
+		\begin{itemize}
+			\item[]
+			\begin{itemize}
+			\item \( \hat{q}(s, a, \mathbf{w}) \): Valor aproximado de la función \( Q(s, a) \).
+			\item \( \mathbf{w} \): Vector de parámetros.
+			\item \( x(s, a) \): Vector de características generado por los recubrimientos.
+			\item \( d \): Número de características activas.
+		\end{itemize}
+		\end{itemize}
+	\end{column}
+	%
+	\begin{column}{.5\textwidth}
+		\includegraphics[width=\linewidth]{fig/fig_tile_coding}
+	\end{column}
+\end{columns}
+
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: \textit{Mountain Car Task} - III}
+	{La función de costo (maximización de $\hat{q}(s, a, \mathbf{w})$) aprendida}
+	
+
+\centerline{	\includegraphics[width=0.8\textwidth]{fig/fig_mountain_car}}
+
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: \textit{Mountain Car Task} - y IV}{Curvas de Aprendizaje}
+		\centerline{\includegraphics[width=0.8\textwidth]{fig/fig_mountain_car_curves} }
+		
+		
+	\begin{itemize}
+		\item Curvas de aprendizaje para el coche en la montaña usando el método semi-gradiente Sarsa con una aproximación de función basada en \textit{tile-coding} y selección de acción $\epsilon$-codiciosa.
+	\end{itemize}
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Sarsa Semi-Gradiente de n-Pasos}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Sarsa de n-pasos Semi-Gradiente}
+	
+	\begin{itemize}
+		\item Podemos obtener una \key{versión de $n$ pasos} del Sarsa semi-gradiente episódico utilizando un retorno de $n$ pasos como el objetivo de actualización en la ecuación de actualización de Sarsa semi-gradiente.
+		
+		\item El \key{retorno de $n$ pasos} se generaliza desde su forma tabular a una aproximación de funciones:
+
+		\begin{equation*}
+			G_{t:t+n} \doteq \begin{cases}
+				R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n \hat{q}(S_{t+n}, A_{t+n}, \mathbf{w}_{t+n-1})  & \text{si } t+n < T \\
+				G_t & \text{si } t+n\ge T
+			\end{cases}
+		\end{equation*}
+		
+		
+		
+		\item La \key{ecuación de actualización} de $n$ pasos es definir $U_t\doteq G_{t:t+n}$:
+		\[
+		\mathbf{w}_{t+n} \doteq \mathbf{w}_{t+n-1} + \alpha \left[ G_{t:t+n} - \hat{q}(S_t, A_t, \mathbf{w}_{t+n-1}) \right] \nabla \hat{q}(S_t, A_t, \mathbf{w}_{t+n-1}),
+		\quad
+		0 \leq t < T
+		\]
+	\end{itemize}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{}
+	%{Sarsa n-pasos Semi-Gradiente Episódico  $\hat{q} \approx q_0$}
+
+	
+	\centerline{\includegraphics[width=.78\textwidth]{fig/alg_episodic_semi_gradient_n_step}}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Ejemplo: \textit{Mountain Car Task}}{Sarsa n-Pasos Semi Gradiente Episódico}
+
+	\begin{columns}
+		\begin{column}{.5\textwidth}
+			\includegraphics[width=\textwidth]{fig/fig_mountain_car_curves_one_step} 
+			
+			\begin{itemize}
+				\item Rendimiento de 1 paso y 8 pasos del método semi-gradiente de Sarsa en la tarea Mountain Car. 
+				\item Tamaños de paso: \(\alpha = 0.5/8\) para \textit{n} = 1 y \(\alpha = 0.3/8\) para \textit{n} = 8.
+			\end{itemize}
+		\end{column}
+		%
+		\begin{column}{.5\textwidth}
+			\includegraphics[width=\textwidth]{fig/fig_mountain_car_curves_steps} 
+			
+			\begin{itemize}
+				\item Efecto de $\alpha$  y $n$.
+				\item Un nivel intermedio de bootstrap (\textit{n} = 4) tuvo el mejor rendimiento. 
+				\item Los errores estándar variaron de 0.5  para \textit{n} = 1 hasta 16 para \textit{n} = 16.
+				
+				~
+				
+				$\text{Error Estándar} = \frac{\text{Desviación estándar de la muestra}}{\text{raíz cuadrada del número de observaciones}}$
+
+
+			\end{itemize}
+			
+		\end{column}
+	\end{columns}
+		
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Control Semi-Gradiente Episódico Off-Policy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Q-Learning Semi-Gradiente Episódico}
+
+
+	
+% Transparencia 1: Introducción al Q-Learning Semi-Gradiente
+\begin{frame}{Q-Learning Semi-Gradiente}
+	\begin{itemize}
+		\item \key{Recuerda}: Q-learning es un método \textbf{off-policy}, mientras que Sarsa es \textbf{on-policy}.
+		
+		\item \key{Métodos de semi-gradiente:} 
+		{$$
+			\mathbf{w}_{t+1} \doteq \mathbf{w}_t + \alpha [ \underset{\text{\color{red} Target}}{U_t(\mathbf{w}_t)} - \hat{q}(S_t, A_t, \mathbf{w}_t) ] \nabla \hat{q}(S_t, A_t, \mathbf{w}_t)
+			$$}
+		\begin{itemize}
+			\item Se corresponde a la actualización en un paso del Método del Descenso de Gradiente aplicada a la función Error Cuadrático Medio.
+		\end{itemize}
+		
+		\item Episódico \key{semi-gradiente Sarsa de un paso} (on-policy): $$U_t(\mathbf{w}_t) = R_{t+1} + \gamma \, \hat{q}(S_{t+1}, A_{t+1}, \mathbf{w}_t)$$ 
+		
+
+		
+		\item Episódico \key{semi-gradiente Q-learning de un paso} (off-policy):
+		
+		\begin{align*}
+			U_t(\mathbf{w}_t) & \doteq R_{t+1} + \gamma \max_{a'} \hat{q}(S_{t+1}, a', \mathbf{w}_t) \qquad \text{(\color{red}Q-Target})\\
+			\mathbf{w}_{t+1} & \doteq \mathbf{w}_t + \alpha \left[ 
+			\overbrace{
+			\underbrace{ R_{t+1} + \gamma \max_{a'} \hat{q}(S_{t+1}, a', \mathbf{w}^-)}_{\text{\color{red}Q-Target}} - \hat{q}(S_t, A_t \mathbf{w}_t)}^{\text{\color{red}Q-Pérdida}} \right] \nabla \hat{q}(S_t, A_t, \mathbf{w}_t)
+		\end{align*}
+			
+		
+		
+		 a aquellos que usan la siguiente función de actualización del descenso del gradiente estocástico, la (9.7), usando como objetivo $U_t$ un valor obtenido por bootstrap.
+		 
+		 
+		
+		\item Extensión de Q-learning que utiliza una aproximación de funciones paramétrica para \(q(s, a)\).
+		
+		
+		
+		\item En Q-learning, la actualización utiliza la acción óptima (\(\max_{a'} q(S_{t+1}, a', \mathbf{w})\)), en lugar de la acción tomada.
+		
+		\item Sarsa semi-gradiente usa \(\nabla_{\mathbf{w}} q(S_{t+1}, A_{t+1}, \mathbf{w})\), alineándose con la política de comportamiento.
+		
+		
+		\item Permite manejar grandes espacios de estados y acciones sin necesidad de una tabla \(q(s, a)\).
+		\item La actualización sigue la regla:
+		\[
+		\mathbf{w} \gets \mathbf{w} + \alpha \big(R_{t+1} + \gamma \max_{a'} q(S_{t+1}, a', \mathbf{w}) - q(S_t, A_t, \mathbf{w})\big) \nabla_{\mathbf{w}} q(S_t, A_t, \mathbf{w}).
+		\]
+		\item Generaliza Q-learning clásico a problemas continuos o con aproximación de funciones.
+	\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Deep Q-Learning}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Deep Q-Learning (DQN)}{Ha nacido un estrella \citep{mnih2013playing} \citep{mnih2015human}} \nocite{whitaker_human_level_control}  \nocite{lapan2018deep}
+%	
+
+%\textbf{\LARGE \color{red}{MIRA ESTE VÍDEO PARA EXPLICARLO EN CLASE}	\url{https://www.youtube.com/watch?v=cNkxCQflixY}}
+
+
+	\begin{itemize}
+		\item \key{Deep Q-Learning (DQN)} es una extensión de Q-Learning clásico que utiliza \key{redes neuronales profundas} para aproximar \(q(s, a)\) con una red neuronal que:
+		\begin{itemize}
+			\item Toma un estado \(s\) como entrada:
+			\begin{itemize}
+				\item Un vector (en entornos simples),  una imagen (en videojuegos o tareas visuales).
+			\end{itemize}
+			
+			\item La salida produce un vector de valores \(q(s, a)\) para todas las acciones posibles \(a\).
+		\end{itemize}
+		\item  	La función \(\hat{q}(s, a; \mathbf{w})\) de aproximación es una red neurona donde \(\mathbf{w}\) son los parámetros de la red.
+.
+		\item \textbf{Ejemplo} para videojuegos (como Atari):
+		\begin{itemize}
+			\item Entrada: Imágenes del juego procesada en blanco y negro.
+			\item Salida: Valores \(q(s, a)\) para acciones como mover a la izquierda, derecha, o disparar.
+		\end{itemize}
+
+		\item \key{Características de DQN:}
+		
+		\begin{itemize}
+			\item La red se entrena para \key{minimizar el error cuadrático medio} (MSE) entre la salida actual y el objetivo:
+			
+			\centerline{\large$\ds
+			L(\mathbf{w}) = \mathbb{E}_{(s, a, r, s')}\left[\left(y - \hat{q}(s, a; \mathbf{w})\right)^2\right],
+			$}
+			donde:
+			\begin{itemize}
+				\item \(\hat{q}(s, a; \mathbf{w})\) es la estimación actual.
+				\item \key{El target es una copia congelada} de la red principal.
+
+				\item[]\qquad \faLongArrowAltRight \;  \(y = r + \gamma \max_{a'} \hat{q}(s', a'; {\color{red} \mathbf{w}_{\text{target}}})\).
+				\item[]\qquad \faLongArrowAltRight \;  \(\color{red} \mathbf{w}_{\text{target}}\) son los parámetros de una red separada (\textit{target network}).
+				
+			\end{itemize}
+			
+			\item \key{Aplica Replay Buffer} (muestreo)
+		
+		\end{itemize}
+	\end{itemize}
+	
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Algoritmo Deep Q-Learning \textit{con Experience Replay}}
+	
+	\centerline{\includegraphics[width=.9\textwidth]{fig/alg_DQL_exp_replay}}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Deep Q-Learning con Juegos de ATARI}
+	
+	
+	
+	\centerline{$ $ \qquad  \includegraphics[height=.85\textheight]{fig/fig_dqn_2dim_t_sne}}
+	
+	\TPMargin{0mm}%
+\begin{textblock}{5.4}(0.2, 6) \small
+	
+	\begin{tcolorbox}[colback=white, left=1mm,right=1mm,top=1mm,bottom=1mm,boxsep=0mm,
+			toptitle=0.5mm,bottomtitle=0.5mm]
+		\includegraphics[height=.3\textheight]{fig/fig_dqn_ilustracion_red}
+	\end{tcolorbox}
+\end{textblock}
+
+
+\TPMargin{0mm}%
+\begin{textblock}{4}(12, 8) \small
+		\textbf{$256^{100800}$  estados}
+		
+		~
+		
+		Representación usando t-SNE
+		\citep{van2008visualizing}
+\end{textblock}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Algoritmo Double Deep Q-Learning}{\citep{vanhasselt2016deep}} \nocite{Ecoffet_2021} \nocite{wang2016dueling} \nocite{bellemare13arcade}
+	
+	
+	
+	
+	\begin{itemize}
+		\item En vez de $\ds y= r +\gamma ~ {\color{red}\max_{a'}} \hat{q}(s', {\color{red} a'}, \mathbf{w}^{-})$, usa \quad \large $\ds y= r +\gamma  ~ \hat{q}(s', {\color{red} \arg \max_{a'} \hat{q}(s', a',\underset{\color{black}\Uparrow}{\mathbf{w}}}) , \underset{\color{black}\Uparrow}{\mathbf{w}}^{-})$
+	\end{itemize}
+	
+\begin{columns}
+	\begin{column}{.35\textwidth}
+		\begin{itemize}
+			\item \key{DQN presenta sobreestimación.}
+			
+			\begin{itemize}
+				\item El $\max_a$ magnifica el error.
+				\item Conduce a políticas subóptimas
+			\end{itemize}
+			
+			\item \key{Aprendizaje doble. }
+				\begin{itemize}
+				\item Es insesgado
+				\item \textbf{Red Principal} (online network)
+				$$\hat{q}(s,a, \mathbf{w})$$ selecciona las acciones $a'$
+				
+				\item \textbf{Red objetivo} (target network)
+				$$\hat{q}(s,a, \mathbf{w}^-)$$ evalúa la acción seleccionada.
+			\end{itemize}
+		\end{itemize}
+	\end{column}
+	%
+	\begin{column}{.58\textwidth}
+			\centerline{\includegraphics[width=1.2\textwidth]{fig/fig_double_q_learning}}
+			
+			\begin{itemize}
+				\item Doble DQN evalúa por debajo de DQN (que soebreestima)
+				\item Doble DQN consigue más recompensas.
+			\end{itemize}
+	\end{column}
+\end{columns}
+	
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Control Diferencial}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recompensa Promedio}{Una Nueva Configuración para Tareas Continuas}
+	
+	\begin{itemize}
+		\item En el \key{caso continuo} el concepto de horizonte temporal (y por tanto de $\gamma$) pierde relevancia.
+		
+		\item Un \key{ejemplo} intuitivo. La recompensa de una máquina dron.
+		\begin{itemize}
+			\item \textbf{Caso episódico:} Con descuento $\gamma$,  prioriza las ganancias tempranas. $G_t=R_{t+1}+\gamma  R_{t+2} + \ldots + \gamma^{T-t-1}R_T$
+			\item \textbf{Caso continuo:} Es más correcto considerar el \key{promedio de recompensas} en el tiempo. \(\ds r(\pi) = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^T R_t\)
+		\end{itemize}
+		
+		\item \key{Recompensa promedio de una política}: es el promedio de las recompensas cuando se sigue una política en el tiempo:
+	
+	\centerline{$\begin{array}{ll}
+			r(\pi) &\ds \doteq \lim_{h \to \infty} \frac{1}{h} \sum_{t=1}^{h} \mathbb{E}[R_t \mid S_0, A_{0:t-1} \sim \pi], \qquad\qquad\text{\color{black}(ergocidad y estacionaridad$^*$)} \\
+			& \ds = \lim_{t \to \infty} \mathbb{E}[R_t \mid S_0, A_{0:t-1} \sim \pi]  
+			= \sum_s \mu_{\pi}(s) \sum_a \pi(a \mid s) \sum_{s',r} p(s', r \mid s, a) r,
+		\end{array}$}
+		
+		\item \key{Cuando el entorno es estacionario}$^*$, la recompensa esperada en cualquier momento \(t\) converge a la recompensa promedio a largo plazo.
+			\begin{itemize}
+				\item La estacionariedad implica que existe una \key{distribución  de estados estacionaria}, denotada por \(\mu_\pi(s)\), tal que:
+				\centerline{
+					$\ds \mu_\pi(s) \doteq \lim_{t \to \infty} \text{Pr}(S_t = s \mid A_{0:t-1} \sim \pi)$ \qquad $\ds  \mu_\pi(s')=\sum_{s} \mu_\pi(s) \sum_{a} \pi(a|s) p(s'|s, a).$}
+				\item Se asume que $\mu_\pi$ existe para cualquier política $\pi$ y es independiente de $S_0$. 
+				\item La \key{ergodicidad} es suficiente para garantizar la existencia de los límites en las ecuaciones anteriores.
+				
+			\end{itemize}
+
+	\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Relación entre Recompensas}
+	
+	\begin{itemize}
+		\item Con la aproximación de funciones en el caso continuo \key{se pierde el teorema de mejora} de políticas:
+		
+		\hfil\textit{\small Si se construye \(\pi'\) tal que:
+		$
+		q_\pi(s, \pi'(s)) \geq v_\pi(s), \quad \forall s \in \mathcal{S}
+		$, entonces:
+		$
+		v_{\pi'}(s) \geq v_\pi(s), \quad \forall s \in \mathcal{S}.
+		$}
+		
+		\item \key{Como alternativa} podemos usar la recompensa promedio:
+		{\large	$\pi' \succ \pi \Leftrightarrow 	r(\pi')  \geq r (\pi) $}
+			
+		
+		\item \key{Exite una relación} entre los retornos descontados y el retorno promedio:
+			\begin{itemize}
+				\item $G_t=R_{t+1}+ \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots$
+				\item Promedio de los retornos descontados:
+				$\ds \lim_{T\rightarrow \infty} \frac{1}{T} \sum_{t=1}^T G_t$
+				
+				\item Retorno promedio:
+				\(\ds r(\pi) = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^T R_t\)
+				
+				\item En un sistema estacionario bajo una política $\pi$:
+				$\ds \lim_{T\rightarrow \infty} \frac{1}{T} \sum_{t=1}^T G_t =\frac{r(\pi) }{1-\gamma}$
+				
+			\end{itemize}
+			
+		\item \key{En un sistema estacionario}, 
+			\begin{itemize}
+				\item El promedio de los retornos descontados contiene la misma información que el retorno promedio, pero ajustada por $\frac{1}{1-\gamma}$.
+				\item \textbf{Si optimizamos el valor descontado sobre la distribución on-policy, el efecto será idéntico al optimizar la recompensa promedio descontada}
+			\end{itemize}
+		
+		
+		
+	
+	\end{itemize}
+	
+
+	
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recomponiendo Todo con Recompensas Promedio - I}
+	
+	\begin{itemize}
+		\item \key{Retorno diferencial:} En la configuración de recompensa promedio, los retornos se definen en términos de diferencias entre las recompensas y la recompensa promedio:
+		\[
+		G_t \doteq R_{t+1} - r(\pi) + R_{t+2} - r(\pi) + R_{t+3} - r(\pi) + \dots =
+		\sum_{k=0}^\infty (R_{t+k+1} - r(\pi))
+		\]
+
+%		
+		\item \key{Funciones de valor diferenciales (Ecuaciones de Bellman):} Eliminamos todos los $\gamma$ y reemplazamos todas las recompensas por la diferencia entre la recompensa y la recompensa promedio verdadera:
+		\[
+		v_\pi(s) = \sum_a \pi(a|s) \sum_{r, s'} p(s', r | s, a) \left[ r - r(\pi) + v_\pi(s') \right].
+		\]
+		\[
+		q_\pi(s, a) = \sum_{r, s'} p(s', r | s, a) \left[ r - r(\pi) + \sum_{a'} \pi(a'|s') q_\pi(s', a') \right].
+		\]
+		\[
+		v_* (s) = \max_\pi \sum_{r, s'} p(s', r | s, a) \left[ r - \max_\pi r(\pi) + v_*(s') \right].
+		\]
+		\[
+		q_* (s, a) = \sum_{r, s'} p(s', r | s, a) \left[ r - \max_\pi r(\pi) + \max_{a'} q_*(s', a') \right].
+		\]
+		
+	\end{itemize}
+	
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recomponiendo Todo con Recompensas Promedio - II}
+	
+\scalebox{1.2}{\begin{minipage}{0.85\textwidth}
+		\begin{itemize}
+		\item  También existe una \key{forma diferencial de los dos errores de TD}:
+		
+		\begin{itemize}
+			\item Error para la función valor estado
+			
+			\centerline{$\ds \delta_t \doteq  R_{t+1} - \overline{R}_t + \hat{v}(S_{t+1}, w_t) - \hat{v}(S_t, \mathbf{w}_t)$\qquad (1)}
+			
+			~
+			
+			\item Error para la función valor estado-acción:
+			
+			\centerline{$\ds 
+			\delta_t \doteq R_{t+1} - \overline{R}_t + \hat{q}(S_{t+1}, A_{t+1}, w_t) - \hat{q}(S_t, A_t, \mathbf{w}_t) 
+			$\qquad (2)}
+			
+			~
+			
+		\end{itemize}
+		donde $\overline{R}_t$ es una estimación de la recompensa promedio $r(\pi)$.
+	
+		~
+		
+		\item 	Con estas definiciones alternativas, la mayoría de nuestros algoritmos y muchos resultados teóricos se pueden aplicar al enfoque de recompensa promedio sin cambios.
+		
+		~
+		
+		\item Por ejemplo, la versión \key{recompensa promedio de Sarsa semi-gradiente} 
+		
+		\centerline{$\ds 
+			\mathbf{w}_{t+1} \doteq \mathbf{w}_t + \alpha \delta_t \nabla \hat{q}(S_t, A_t, \mathbf{w}_t) $}
+		
+		con $\delta_t$ dado por (2). 
+	\end{itemize}
+\end{minipage}}
+	
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Sarsa n-pasos Semi-Gradiente Diferencial  $\hat{q} \approx q_\pi$}
+	
+	
+	\centerline{\includegraphics[width=.9\textwidth]{fig/alg_differential_semi_gradient_n_step_sarsa}}
+	
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Referencias}
+
+% Redefinimos la apariencia
+%\setbeamertemplate{headline}{}
+%\setbeamertemplate{frametitle}{\vskip 0.5cm	\small{\textbf{\insertframetitle}}}
+%\setbeamertemplate{footline}{}
+
+
+
+
+
+
+% Mostramos la bibliografía
+% \begin{frame}[allowframebreaks] %% Si ocupa más de una página
+\begin{frame}[allowframebreaks]{Referencias -} %% Si hay sólo una página
+	
+%	\begin{frame}{Referencias} %% Si hay sólo una página
+		\nocite{Sutton2018, silver2015, Hado2018Lecture3}
+		
+		% \vskip -5cm %% Para ajustar la distancia al comienzo	
+		%\bibliography{references}	
+		\printbibliography[heading=none]
+	\end{frame}    
+	
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+
+
+
